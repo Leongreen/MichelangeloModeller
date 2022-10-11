@@ -158,13 +158,33 @@ class Model:
     #   ['z'] list
 
     def createResult(self):
-        writer = pd.ExcelWriter('farm_data.xlsx', engine='xlsxwriter')
+        writer = pd.ExcelWriter('temp_results.xlsx', engine='xlsxwriter')
         self.data.copy().to_excel(writer, sheet_name='A')
 
         workbook = writer.book
         worksheet = writer.sheets['A']
 
         chart = workbook.add_chart({'type': 'column'})
+        max_row = len(self.data)
+        for i in range(3):
+            col = i + 1
+            chart.add_series({
+                'name': ['Sheet1', 0, col],
+                'categories': ['Sheet1', 1, 0, max_row, 0],
+                'values': ['Sheet1', 1, col, max_row, col],
+                'marker': {'type': 'circle', 'size': 7},
+            })
+
+        # Configure the chart axes.
+        chart.set_x_axis({'name': 'Index'})
+        chart.set_y_axis({'name': 'Data Value',
+                          'major_gridlines': {'visible': False}})
+
+        # Insert the chart into the worksheet.
+        worksheet.insert_chart('K2', chart)
+
+        # Close the Pandas Excel writer and output the Excel file.
+        writer.save()
 
 
     def linearsvc(self):
