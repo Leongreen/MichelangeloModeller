@@ -14,6 +14,7 @@ class Model:
 
     def __init__(self, params):
         self.data = pd.DataFrame(params['data'])
+        self.raw_data = self.data
         self.response = params['response']
         if self.response == 'None':
             self.supervised = False
@@ -157,12 +158,15 @@ class Model:
     #   ['y'] list
     #   ['z'] list
 
-    def createResult(self):
+    def createResult(self, result):
         writer = pd.ExcelWriter('temp_results.xlsx', engine='xlsxwriter')
-        self.data.copy().to_excel(writer, sheet_name='A')
-
+        self.raw_data.copy().to_excel(writer, sheet_name='Raw Data')
+        pd.DataFrame(result['confusion']).copy().to_excel(writer, sheet_name='Confusion Matrix')
+        self.raw_data.describe(include='all').copy().to_excel(writer, sheet_name='Data summary')
+        self.raw_data.corr().copy().to_excel(writer, sheet_name='Variable Correlation')
+        print(type(result['confusion']))
         workbook = writer.book
-        worksheet = writer.sheets['A']
+        worksheet = writer.sheets['Raw Data']
 
         chart = workbook.add_chart({'type': 'column'})
         max_row = len(self.data)
@@ -248,7 +252,7 @@ class Model:
         result['graphinfo'] = graphinfo
         if self.gridsearch:
             result['bestp'] = grid.best_params_
-        self.createResult()
+        self.createResult(result)
         return result
 
     def buildgraphinfo(self, train, response, model):
