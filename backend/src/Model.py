@@ -157,6 +157,16 @@ class Model:
     #   ['y'] list
     #   ['z'] list
 
+    def createResult(self):
+        writer = pd.ExcelWriter('farm_data.xlsx', engine='xlsxwriter')
+        self.data.copy().to_excel(writer, sheet_name='A')
+
+        workbook = writer.book
+        worksheet = writer.sheets['A']
+
+        chart = workbook.add_chart({'type': 'column'})
+
+
     def linearsvc(self):
         result = {"supervised" : True}
         pred = None
@@ -218,6 +228,7 @@ class Model:
         result['graphinfo'] = graphinfo
         if self.gridsearch:
             result['bestp'] = grid.best_params_
+        self.createResult()
         return result
 
     def buildgraphinfo(self, train, response, model):
