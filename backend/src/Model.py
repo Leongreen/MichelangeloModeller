@@ -14,6 +14,7 @@ class Model:
 
     def __init__(self, params):
         self.data = pd.DataFrame(params['data'])
+        self.raw_data = self.data
         self.response = params['response']
         if self.response == 'None':
             self.supervised = False
@@ -157,6 +158,43 @@ class Model:
     #   ['y'] list
     #   ['z'] list
 
+    def createResult(self, result):
+
+        writer = pd.ExcelWriter('temp_results.xlsx', engine='xlsxwriter')
+        self.raw_data.copy().to_excel(writer, sheet_name='Raw Data')
+        pd.DataFrame(result['confusion']).copy().to_excel(writer, sheet_name='Confusion Matrix')
+        self.raw_data.describe(include='all').copy().to_excel(writer, sheet_name='Data summary')
+        self.raw_data.corr().copy().to_excel(writer, sheet_name='Variable Correlation')
+        print(type(result['confusion']))
+        workbook = writer.book
+        worksheet = workbook.add_worksheet("Graph")
+
+        headings = ['Component 1', 'Component 2', 'Prediction']
+        worksheet.write_row('A1', headings)
+        worksheet.write_column('A2', result['graphinfo']['x'])
+        worksheet.write_column('B2', result['graphinfo']['y'])
+        worksheet.write_column('C2', result['graphinfo']['z'])
+
+        data_length = len(result['graphinfo']['z'])
+        chart1 = workbook.add_chart({'type': 'scatter'})
+
+        chart1.add_series({
+            'name': ['Graph', 0, 2],
+            'categories': ['Graph', 1, 0, data_length, 0],
+            'values': ['Graph', 1, 1, data_length, 1],
+            'points': [
+                {'fill': {'color': 'green'}},
+                {'fill': {'color': 'red'}},
+            ],
+        })
+
+        worksheet.insert_chart('F2',chart1)
+
+
+        # Close the Pandas Excel writer and output the Excel file.
+        writer.save()
+
+
     def linearsvc(self):
         result = {"supervised" : True}
         pred = None
@@ -218,6 +256,7 @@ class Model:
         result['graphinfo'] = graphinfo
         if self.gridsearch:
             result['bestp'] = grid.best_params_
+        self.createResult(result)
         return result
 
     def buildgraphinfo(self, train, response, model):

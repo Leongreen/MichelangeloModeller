@@ -10,6 +10,7 @@ class ModelControl:
         # expects a dict
         self.model = Model(params)
 
+
     def run(self):
         if self.model is not None:
             self.model.data_clean()
