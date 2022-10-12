@@ -10,8 +10,8 @@ import pandas as pd
 import numpy as np
 import statsmodels.api as sm
 from DataManager import DataManager
-from spicy import stats
-from sklearn.model_selection import train_test_split
+# from spicy import stats
+import scipy.stats
 from statsmodels.formula.api import ols
 
 
@@ -63,7 +63,12 @@ class Multi_variable_analysis():
         df_dummy.drop([categorical_variable], inplace = True, axis=1)
         # print(list(df_dummy))
         reg = sm.OLS(df_dummy[response_variable], sm.add_constant(df_dummy[prediction_variable])).fit()
-        print(reg.summary())
+        # print(reg.summary())
+        confidence_interval = reg.conf_int()
+        R_adjt = reg.rsquared_adj
+
+
+
 
 
 
@@ -74,7 +79,7 @@ class Multi_variable_analysis():
 
 
 
-path = "..\R_and_D\iris.csv"
+path = r"C:\Users\Willi\Desktop\aut degree\Second year\R_and_D\Semester 2\Clean_coding\MichelangeloModeller\backend\src\iris.csv"
 
 a = Multi_variable_analysis(path)
 a.main()

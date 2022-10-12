@@ -1,7 +1,7 @@
 from .DataManager import DataManager
 import pandas as pd
 import numpy
-'''test1'''
+'''test2'''
 class Univariable():
     """
     1.Read files
