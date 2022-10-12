@@ -16,33 +16,32 @@ def FirstEntries(file):
     data = d.ReadFile(file)
 
     data = CleanData(data)
+    # print(type(data))
+    # print(data)
 
-    xlim = 6
-    ylim = 15
-
-    if len(data.columns) > xlim:
-        x_range = xlim
-    else:
-        x_range = len(data.columns)
-
-    if len(data.index) > ylim:
-        y_range = ylim
-    else:
-        y_range = len(data.index)
-
-
+    # # fC = list(data.columns.values)
+    # # print(fC)
+    # data = data.iloc[2: , :]
+    # for columns in data:
+    #     print(columns)
+    # container = data.iloc[:,1:4]
+    # for columns in container:
+    #     print(columns)
+    # print(data.iloc[1:4,1:2])
     returnEntries = {}
 
+    # print(data.iloc[1:4,1:2].values.tolist())
 
-    returnEntries['labels'] = data.columns[0:x_range]
-    for x in data.columns[0:x_range]:
-        returnEntries['data'] = returnEntries['data'] + data.iloc[x].values.toList()
+    for i in range(3):
+        returnEntries[i] = {
+            'label': data.columns[i],
+            'data': data.iloc[0:3,i:i+1].values.tolist()
+        }
+        # localList = data.iloc[1:4,i:i+1].values
+        # returnEntries[i] = localList
 
+    # print(returnEntries)
 
-
-    print("=========================")
-    print(returnEntries)
-    print("=========================")
 
     return returnEntries
 

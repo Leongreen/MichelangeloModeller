@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {
   BrowserRouter as Router,
   Switch,
@@ -14,6 +14,7 @@ import BivA from './components/Bivariable';
 import ModelCreation from './components/ModelCreating';
 
 const App = () => {
+  const [raw_data, setRaw_data] = useState();
   return (
     
     <div className="min-h-screen bg-gradient-to-br from-cyan-900 to-[rgb(18,26,56)] bg-cover">

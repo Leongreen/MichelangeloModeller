@@ -9,11 +9,15 @@ import {
 const ModelCreation = () => {
     const navigate = useHistory()
 
-    // On page load
+    // On page update
     useEffect(() => {
+        // Checking if data is loaded
+        if (window.data == undefined || window.data == null){
+            navigate.push('/');
+        }
         // Filling a selection box with the labels
         let fd = new FormData()
-        let file = new File(    [new Blob([sessionStorage.getItem('raw_file')])], 
+        let file = new File(    [new Blob([window.data])], 
                             sessionStorage.getItem('raw_file_fileName'))
         
         fd.append('file', file)
@@ -37,7 +41,7 @@ const ModelCreation = () => {
     });
     const applyModel = () => {
         let fd = new FormData()
-        let file = new File(    [new Blob([sessionStorage.getItem('raw_file')])], 
+        let file = new File(    [new Blob([window.data])], 
                                 sessionStorage.getItem('raw_file_fileName'));
                                 
         fd.append('file', file);
