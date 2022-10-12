@@ -66,6 +66,7 @@ class Multi_variable_analysis():
         # print(reg.summary())
         confidence_interval = reg.conf_int()
         R_adjt = reg.rsquared_adj
+        return round(R_adjt,3)
 
 
 
