@@ -159,6 +159,7 @@ class Model:
     #   ['z'] list
 
     def createResult(self, result):
+
         writer = pd.ExcelWriter('temp_results.xlsx', engine='xlsxwriter')
         self.raw_data.copy().to_excel(writer, sheet_name='Raw Data')
         pd.DataFrame(result['confusion']).copy().to_excel(writer, sheet_name='Confusion Matrix')
@@ -166,26 +167,29 @@ class Model:
         self.raw_data.corr().copy().to_excel(writer, sheet_name='Variable Correlation')
         print(type(result['confusion']))
         workbook = writer.book
-        worksheet = writer.sheets['Raw Data']
+        worksheet = workbook.add_worksheet("Graph")
 
-        chart = workbook.add_chart({'type': 'column'})
-        max_row = len(self.data)
-        for i in range(3):
-            col = i + 1
-            chart.add_series({
-                'name': ['Sheet1', 0, col],
-                'categories': ['Sheet1', 1, 0, max_row, 0],
-                'values': ['Sheet1', 1, col, max_row, col],
-                'marker': {'type': 'circle', 'size': 7},
-            })
+        headings = ['Component 1', 'Component 2', 'Prediction']
+        worksheet.write_row('A1', headings)
+        worksheet.write_column('A2', result['graphinfo']['x'])
+        worksheet.write_column('B2', result['graphinfo']['y'])
+        worksheet.write_column('C2', result['graphinfo']['z'])
 
-        # Configure the chart axes.
-        chart.set_x_axis({'name': 'Index'})
-        chart.set_y_axis({'name': 'Data Value',
-                          'major_gridlines': {'visible': False}})
+        data_length = len(result['graphinfo']['z'])
+        chart1 = workbook.add_chart({'type': 'scatter'})
 
-        # Insert the chart into the worksheet.
-        worksheet.insert_chart('K2', chart)
+        chart1.add_series({
+            'name': ['Graph', 0, 2],
+            'categories': ['Graph', 1, 0, data_length, 0],
+            'values': ['Graph', 1, 1, data_length, 1],
+            'points': [
+                {'fill': {'color': 'green'}},
+                {'fill': {'color': 'red'}},
+            ],
+        })
+
+        worksheet.insert_chart('F2',chart1)
+
 
         # Close the Pandas Excel writer and output the Excel file.
         writer.save()
