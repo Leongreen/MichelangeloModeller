@@ -58,9 +58,9 @@ class Randomization_test():
     def pair_t_test(self,data_1, data_2):
         '''
         This investigates the difference between samples of the same group at different points. In comparison
-        to the two sample t test.  This deals with data sets that are not independent.  eg. Sample group of people,
+        to the two sample t test.  This deals with data set that are not independent.  eg. Sample group of people,
         at time t they take medicine A and at time t-1 they took nothing.  If we want to check if there is a difference,
-        we can us the pair t test.
+        we can use the pair t test.
         '''
         d = DataManager()
         self.data = d.ReadFile(self.path)
