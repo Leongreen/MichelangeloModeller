@@ -5,7 +5,7 @@ import {
 
 const WelcomePage = () => {
     const navigate = useHistory()
-    
+    window.data = "Hello";
     const uploadDataset = () => {
         let input = document.getElementById("file");
         let file;
@@ -35,26 +35,29 @@ const WelcomePage = () => {
                 res=>res.json()
             ).then(
                 data=> {
-                    // An example of how to save files to the session
-                    sessionStorage.setItem('raw_file', JSON.stringify(data))
-                    // This parse is needed to remove previous extension of a file and add a .json extension
-                    sessionStorage.setItem('raw_file_fileName', filename.substr(0,filename.indexOf('.')) + '.json')
+                    window.data = JSON.stringify(data)
+                    sessionStorage.setItem('raw_file_fileName', filename.substr(0, filename.indexOf('.')) + '.json')
+                    // LEGACY
+                    // // An example of how to save files to the session
+                    // sessionStorage.setItem('raw_file', JSON.stringify(data))
+                    // // This parse is needed to remove previous extension of a file and add a .json extension
+                    // sessionStorage.setItem('raw_file_fileName', filename.substr(0,filename.indexOf('.')) + '.json')
 
-                    // The following fetch has to be called after file is saved since it is going
-                    // to call the saved file for the testing purposes
-                     /**
-                     * The following code snippet show how to access raw_file
-                     * and send it back to backend. Session storage cannot store
-                     * a file itself so store contents of a file in json and create
-                     * a new file in json format to pass it to the backend
-                     */
-                    // SNIPPET STARTS {
-                        fd = new FormData()
-                        file = new File(    [new Blob([sessionStorage.getItem('raw_file')])], 
-                                            sessionStorage.getItem('raw_file_fileName'))
+                    // // The following fetch has to be called after file is saved since it is going
+                    // // to call the saved file for the testing purposes
+                    //  /**
+                    //  * The following code snippet show how to access raw_file
+                    //  * and send it back to backend. Session storage cannot store
+                    //  * a file itself so store contents of a file in json and create
+                    //  * a new file in json format to pass it to the backend
+                    //  */
+                    // // SNIPPET STARTS {
+                    //     fd = new FormData()
+                    //     file = new File(    [new Blob([sessionStorage.getItem('raw_file')])], 
+                    //                         sessionStorage.getItem('raw_file_fileName'))
                         
-                        fd.append('file', file)
-                    // } SNIPPET ENDS
+                    //     fd.append('file', file)
+                    // // } SNIPPET ENDS
 
                     // TODO: Check if Session storage contains "raw_file" else send an error
                     navigate.push('/DataReveal')

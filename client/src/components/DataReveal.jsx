@@ -2,19 +2,18 @@ import React, {useEffect} from 'react'
 import {
     useHistory
 } from "react-router-dom";
-import Plotly from 'plotly.js-dist';
 import generateATable from '../functions/TableCreator.js'
 
 const DataReveal = () => {
     const navigate = useHistory()
-
     /**
      * The following function runs if user decides to change the dataset. Basically a repetition of
      * the code from the WelcomePage component.
      */
     const uploadDataset = () => {
-        let lab = []
-        let tableData = []
+        
+        let lab = [];
+        let tableData = [];
 
 
         let input = document.getElementById("file");
@@ -45,26 +44,40 @@ const DataReveal = () => {
                 res => res.json()
             ).then(
                 data => {
-                    // An example of how to save files to the session
-                    sessionStorage.setItem('raw_file', JSON.stringify(data))
-                    // This parse is needed to remove previous extension of a file and add a .json extension
+                    // Setting UseState to remember the file
+                    window.data = JSON.stringify(data)
+                    fd = new FormData();
                     sessionStorage.setItem('raw_file_fileName', filename.substr(0, filename.indexOf('.')) + '.json')
-
-                    // The following fetch has to be called after file is saved since it is going
-                    // to call the saved file for the testing purposes
-                    /**
-                     * The following code snippet show how to access raw_file
-                     * and send it back to backend. Session storage cannot store
-                     * a file itself so store contents of a file in json and create
-                     * a new file in json format to pass it to the backend
-                     */
-                    // SNIPPET STARTS {
-                    fd = new FormData()
-                    file = new File([new Blob([sessionStorage.getItem('raw_file')])],
+                    file = new File([new Blob([window.data])],
                         sessionStorage.getItem('raw_file_fileName'))
-
+                    
+                    
                     fd.append('file', file)
-                    // } SNIPPET ENDS
+
+                    // LEGACY
+                    // // An example of how to save files to the session
+                    // sessionStorage.setItem('raw_file', JSON.stringify(data))
+                    // // This parse is needed to remove previous extension of a file and add a .json extension
+                    // sessionStorage.setItem('raw_file_fileName', filename.substr(0, filename.indexOf('.')) + '.json')
+
+                    // // The following fetch has to be called after file is saved since it is going
+                    // // to call the saved file for the testing purposes
+                    // /**
+                    //  * The following code snippet show how to access raw_file
+                    //  * and send it back to backend. Session storage cannot store
+                    //  * a file itself so store contents of a file in json and create
+                    //  * a new file in json format to pass it to the backend
+                    //  */
+                    // // // SNIPPET STARTS {
+                    // fd = new FormData()
+                    // file = new File([new Blob([sessionStorage.getItem('raw_file')])],
+                    //     sessionStorage.getItem('raw_file_fileName'))
+
+                    // fd.append('file', file)
+                    // // } SNIPPET ENDS
+
+                    
+                    
 
                     // Sending a post request to FirstEntriesToFE
                     // So we can represent first entries of the provided
@@ -80,25 +93,19 @@ const DataReveal = () => {
                         data => {
 
 
-                            console.log(data.values);
-                            var data = [{
-                                type: 'table',
-                                header: {
-                                    values: data.labels,
-                                    align: "center",
-                                    line: {width: 1, color: 'black'},
-                                    fill: {color: "grey"},
-                                    font: {family: "Arial", size: 12, color: "white"}
-                                },
-                                cells: {
-                                    values: data.values,
-                                    align: "center",
-                                    line: {color: "black", width: 1},
-                                    font: {family: "Arial", size: 11, color: ["black"]}
-                                }
-                            }]
-
-                            Plotly.newPlot('graph1', data);
+                            tableData = null;
+                            lab = null;
+                            tableData = [];
+                            lab = []
+                            // For loop to fill the table. It is hardcoded to 3 and backend returns 3 components on
+                            // it's end. Otherwise it would be a while loop until undefined element is found
+                            for (let i = 0; i < 3; i++){
+                                // Filling lists for the table
+                                lab.push(data[i].label)
+                                tableData.push(data[i].data)
+                            }
+                            // Changing the 'table' div to contain an actual table using generateATable function
+                            document.getElementById('table').innerHTML = generateATable(lab, tableData);
                         }
                     ) // FirstEntries Fetch ends
                 }
@@ -112,11 +119,19 @@ const DataReveal = () => {
      */
     // UseEffect to present a dataset
     useEffect((lab, tableData) => {
-        let fd = new FormData()
-        let file = new File([new Blob([sessionStorage.getItem('raw_file')])],
-            sessionStorage.getItem('raw_file_fileName'));
 
-        fd.append('file', file);
+        // Filling formdata with the saved data
+        let fd = new FormData();
+        
+        let file = new File([new Blob([window.data])],
+            sessionStorage.getItem('raw_file_fileName'))
+        fd.append('file', file)
+        // LEGACY CODE
+        // let fd = new FormData()
+        // let file = new File([new Blob([sessionStorage.getItem('raw_file')])],
+        //     sessionStorage.getItem('raw_file_fileName'));
+
+        // fd.append('file', file);
 
         // A fetch to get new data
         fetch("/FirstEntriesToFE", {
@@ -130,25 +145,19 @@ const DataReveal = () => {
             data => {
 
 
-                console.log(data);
-                var data = [{
-                    type: 'table',
-                    header: {
-                        values: data.labels,
-                        align: "center",
-                        line: {width: 1, color: 'black'},
-                        fill: {color: "grey"},
-                        font: {family: "Arial", size: 12, color: "white"}
-                    },
-                    cells: {
-                        values: data.values,
-                        align: "center",
-                        line: {color: "black", width: 1},
-                        font: {family: "Arial", size: 11, color: ["black"]}
-                    }
-                }]
-
-                Plotly.newPlot('graph1', data);
+                tableData = null;
+                lab = null;
+                tableData = [];
+                lab = [];
+                // For loop to fill the table. It is hardcoded to 3 and backend returns 3 components on
+                // it's end. Otherwise it would be a while loop until undefined element is found
+                for (let i = 0; i < 3; i++){
+                    // Filling lists for the table
+                    lab.push(data[i].label)
+                    tableData.push(data[i].data)
+                }
+                // Changing the 'table' div to contain an actual table using generateATable function
+                document.getElementById('table').innerHTML = generateATable(lab, tableData);
             }
         )
     });

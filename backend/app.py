@@ -27,7 +27,7 @@ def SendJSONFile():
         raw_file = request.files['file'] 
         d = DataManager()
         d.ReadFile(raw_file)
-        print("Sending Dataframe: " + str(d.df))
+        # print("Sending Dataframe: " + str(d.df))
         return d.df.to_json()
     return "A get method was launched"
 
