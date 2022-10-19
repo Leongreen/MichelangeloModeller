@@ -36,7 +36,7 @@ class Randomization_test():
         if p_value < 0.05:
             return "We have enough evidence that these data are not coming from the population distribution"
         else:
-            return "We do not have enough evidence that these data are not coming from the population distribution"
+            return "We do not have enough evidence that these data are coming from the population distribution"
 
     def two_sample_t_test(self,sample_1, sample_2):
         '''
