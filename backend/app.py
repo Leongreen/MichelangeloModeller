@@ -8,6 +8,7 @@ from src.ModelControl import *
 from src.Bivariable_analysis import Bivariable_analysis
 from src.univariabel_analysis import Univariable
 from src.univariabel_histogram import Univariable_histogram
+from src.excelgen import excelgen
 from src.DataManager import DataManager
 from src.DataCleaning import *
 
@@ -15,6 +16,7 @@ import pandas as pd
 import numpy as np
 
 app = Flask(__name__)
+output = excelgen()
 
 def index():
     return ("Hello")
@@ -142,31 +144,22 @@ def applyModel():
         raw_file = request.files['file'] 
         d = DataManager()
         d.ReadFile(raw_file)
-        
-        p = {}
-        p['data'] = d.df
-        p['response'] = request.form['response']
-        p['missing_values'] = request.form['missing_values']
-        p['scalar'] = request.form['scalar']
-        p['encoder'] = request.form['encoder']
-        p['gridsearch'] = True
-        p['classifier'] = 'auto'
-        p['clusters'] = request.form['NClusters']
-        p['testsplit'] = 0.5
-        
-        m = ModelControl()
-        m.setParemters(p)
+        model = Model()
 
-        r_dict = m.run()[0]
-        
+        output.add_content(d.df,'Raw Data')
+        output.add_content(model.data_transform(d.df),'Feature Space')
+        output.add_content(d.df.corr(), 'Correlation')
 
-        r_dict['graphinfo']['x'] = r_dict['graphinfo']['x'].tolist()
-        r_dict['graphinfo']['y'] = r_dict['graphinfo']['y'].tolist()
-        #r_dict['graphinfo']['z'] = r_dict['graphinfo']['z'].tolist() already a list?
-        r_dict['confusion'] = r_dict['confusion'].tolist()
-        r_dict['model'] = ''
-        
-        print(r_dict)
+        results = model.run_model(d.df,request.form['response'])
+        r_dict = {}
+        for x in results:
+            if x['summary'] is not None:
+                r_dict[x['Classifier']] = x['summary']
+                output.add_content(pd.DataFrame(x['summary']),x['Classifier'])
+
+        output.generate()
+
+
         return jsonify(r_dict)
     return "A get method was launched"
 

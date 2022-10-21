@@ -1,9 +1,16 @@
 import pandas as pd
+from keras.layers import TextVectorization
+from sklearn.linear_model import SGDClassifier
+from sklearn.svm import LinearSVC
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.gaussian_process.kernels import RBF
 from sklearn.impute import SimpleImputer
 from sklearn.manifold import TSNE
 from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OrdinalEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.svm import LinearSVC
 from sklearn import metrics
@@ -12,7 +19,9 @@ import numpy as np
 
 class Model:
 
-    def __init__(self, params):
+    def __init__(self):
+
+        """
         self.data = pd.DataFrame(params['data'])
         self.raw_data = self.data
         self.response = params['response']
@@ -67,252 +76,155 @@ class Model:
             self.discreatize = params['discreatize']
         else:
             self.discreatize = False
+            """
+        pass
 
-    def data_clean(self):
-        self.data = self.data.dropna(axis=1)
-        num = pd.DataFrame(self.data.select_dtypes(include=['float64', 'int64']))
-        if num.isnull().values.sum() != 0:
-            if self.missing_values == 'remove':
-                num = pd.DataFrame(num.dropna())
-            elif self.missing_values == 'impute':
-                Simputer = SimpleImputer(strategy=self.imputer)
-                num = pd.DataFrame(Simputer.fit_transform(num))
-        self.data[num.columns] = num
-        self.data = self.data.dropna(axis=0)
 
-    def data_transform(self):
+    def data_transform(self,data):
+        # reset index to 0,1,2,3...
+        data.index = range(0, len(data))
 
-        num = self.data.select_dtypes(include=['float64', 'int64'])
-        str = self.data.select_dtypes(exclude=['float64', 'int64'])
-        for c in num.columns:
-            if (self.data[c].nunique() / self.samples) < self.continuous_threshold and self.discreatize:
-                pass  # TODO discreatize
-        match self.scalar:
-            case 'standard':
-                col_names = num.columns
-                features = self.data[col_names]
-                scaler = StandardScaler()
-                scaler.fit(features)
-                features = scaler.transform(features.values)
-                self.data[col_names] = features
+        # separate the numbered and text columns
+        nums = data.select_dtypes(include=['float64', 'int64'])
+        strs = data.select_dtypes(exclude=['float64', 'int64'])
 
-        match self.encoder:
-            case 'Label':
-                col_names = str.columns
-                features = self.data[col_names]
-                labelencoder = LabelEncoder()
-                labelencoder.fit(features.values)
-                features = labelencoder.transform(features.values)
-                self.encoder_history = labelencoder
-                self.data[col_names.all()] = features
-                print(self.data.columns)
+        # determine which columns are categorical and which are discrete
+        likely_cat = {}
+        for var in strs.columns:
+            # test number of unique values in column
+            likely_cat[var] = 1. * strs[var].nunique() / strs[var].count() < 0.02
 
-    def run_model(self):
-        scount = self.samples
-        if scount < 50:
-            return "failed get more data"
-        results = []
-        if self.supervised:
-            if scount < 100000:
-                results.append(self.linearsvc())
-                text = True
-                for x in self.data.columns:
-                    if self.data.dtypes[x] == 'float64' or self.data.dtypes[x] == 'int64':
-                        text = False
-                if text:
-                    results.append(self.naivebayes())
-                else:
-                    results.append(self.kneighbor())
-                    results.append(self.svc())
-                    results.append(self.ensemble())
+        # dict to store label encoder incase needed
+        encoders = {}
+
+        # create dataframe to hold new vectorized data
+        feature_space = pd.DataFrame(nums)
+        for var in strs.columns:
+            if likely_cat[var]:
+                # text column is categorical so use a label encoder
+                le = OrdinalEncoder()
+                encoded_labels = pd.DataFrame(le.fit_transform(strs[var].to_numpy().reshape(-1, 1)))
+                encoded_labels.columns = [var]
+                for x in encoded_labels.columns:
+                    feature_space.loc[:, x] = encoded_labels[x]
+                encoders[var] = le
             else:
-                results.append(self.sgd())
-                results.append(self.kernal())
-        else:
-            if self.clusters != -1:
-                if scount < 10000:
-                    results.append(self.meanshift())
-                    results.append(self.vbgmm())
-                else:
-                    pass  # too much data
+                # text column is discrete so use a text vectorizer
+
+                # calculate the average word (token) count per cell for a column
+                max_length = 0
+                for x in strs[var]:
+                    max_length += len(x.split())
+                max_length = round(max_length / len(strs[var]))
+
+                # Keras text vectorization function tokenizes and then vectorizes the text
+                vectoriser = TextVectorization(output_sequence_length=max_length, output_mode='int')
+                # train the vectoriser on the data
+                vectoriser.adapt(strs[var].to_numpy())
+                # call the vectoriser function on the data
+                vectored = pd.DataFrame(vectoriser(strs[var]).numpy())
+                # generate the names for the new columns in the form [column_name]_X
+                c_names = []
+                for i in range(len(vectored.columns)):
+                    c_names.append(str(str(var) + "_" + str(i)))
+                vectored.columns = c_names
+                # copy over the vectorised columns into the feature space dataframe
+                for x in vectored.columns:
+                    feature_space.loc[:, x] = vectored[x]
+
+        # normalise the values in feature space (but ignore the class variables)
+        for x in feature_space.columns:
+            if x in likely_cat:
+                if not likely_cat[x]:
+                    feature_space[x] = (feature_space[x] - feature_space[x].mean()) / feature_space[x].std()
             else:
-                if scount < 10000:
-                    results.append(self.kmeans())
-                    results.append(self.spectral())
-                    results.append(self.gmm())
-                else:
-                    results.append(self.mkmeans())
+                feature_space[x] = (feature_space[x] - feature_space[x].mean()) / feature_space[x].std()
+        return feature_space
+
+    def run_model(self,data, label):
+        data = data
+        labels = data[label]
+        data = data.drop(label, axis=1)
+        feature_space = self.data_transform(data)
+
+        x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.25)
+
+        classifiers = []
+        # SGDClassifier
+        classifiers.append(self.run_sgd(x_train, y_train, x_test, y_test))
+        classifiers.append(self.run_svc(x_train, y_train, x_test, y_test))
+        classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
+        classifiers.append(self.run_gaussian(x_train, y_train, x_test, y_test))
+        return classifiers
+
+    def run_sgd(self, x, y, X, Y):
+        # create the classifier object
+        sgd = SGDClassifier()
+        # fit classifier to training data (x,y)
+        sgd.fit(x, y)
+        # make a prediction on the test data
+        p = sgd.predict(X)
+        # generate and return results
+        results = {'Classifier': 'SGD'}
+        results['summary'] = metrics.classification_report(Y, p, output_dict=True)
+        results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
+        print(f"SGD Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
         return results
 
-    # return form
-    # dict
-    # ['supervised'] boolean
-    # ['model'] sckit-learn model
-    # ['acc'] float
-    # ['recall'] float
-    # ['pre'] float
-    # ['f1'] float
-    # ['confusion'] 2d array
-    # ['graphinfo'] :
-    #   ['x'] list
-    #   ['y'] list
-    #   ['z'] list
+    def run_svc(self, x, y, X, Y):
+        # create the classifier object
+        svc = LinearSVC()
+        # fit classifier to training data (x,y)
+        svc.fit(x, y)
+        # make a prediction on the test data
+        p = svc.predict(X)
+        # generate and return results
+        results = {'Classifier': 'LinearSVC'}
+        results['summary'] = metrics.classification_report(Y, p, output_dict=True)
+        results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
+        print(f"SVC Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
+        return results
 
-    def createResult(self, result):
+    def run_mlp(self, x, y, X, Y):
+        # create the classifier object
+        mlp = MLPClassifier()
+        # fit classifier to training data (x,y)
+        mlp.fit(x, y)
+        # make a prediction on the test data
+        p = mlp.predict(X)
+        # generate and return results
+        results = {'Classifier': 'MLP Neural Network'}
+        results['summary'] = pd.concat([pd.DataFrame(metrics.classification_report(Y, p, output_dict=True)),pd.DataFrame(mlp.coefs_)],axis=0,join='outer')
+        results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
+        print(f"MLP Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
+        return results
 
-        writer = pd.ExcelWriter('temp_results.xlsx', engine='xlsxwriter')
-        self.raw_data.copy().to_excel(writer, sheet_name='Raw Data')
-        pd.DataFrame(result['confusion']).copy().to_excel(writer, sheet_name='Confusion Matrix')
-        self.raw_data.describe(include='all').copy().to_excel(writer, sheet_name='Data summary')
-        self.raw_data.corr().copy().to_excel(writer, sheet_name='Variable Correlation')
-        print(type(result['confusion']))
-        workbook = writer.book
-        worksheet = workbook.add_worksheet("Graph")
+    def run_gaussian(self, x, y, X, Y):
+        results = {'Classifier': 'Gaussian Process'}
+        if (len(x) * len(x.columns)) > 10000:
+            print("Skipping Guassian")
+            return results
+        # create the classifier object and kernel
+        kernel = 1.0 * RBF(1.0)
+        mlp = GaussianProcessClassifier(kernel=kernel)
+        # fit classifier to training data (x,y)
+        mlp.fit(x, y)
+        # make a prediction on the test data
+        p = mlp.predict(X)
+        # generate and return results
 
-        headings = ['Component 1', 'Component 2', 'Prediction']
-        worksheet.write_row('A1', headings)
-        worksheet.write_column('A2', result['graphinfo']['x'])
-        worksheet.write_column('B2', result['graphinfo']['y'])
-        worksheet.write_column('C2', result['graphinfo']['z'])
+        results['summary'] = metrics.classification_report(Y, p, output_dict=True)
+        results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
+        print(f"Gaussian Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
+        return results
 
-        data_length = len(result['graphinfo']['z'])
-        chart1 = workbook.add_chart({'type': 'scatter'})
-
-        chart1.add_series({
-            'name': ['Graph', 0, 2],
-            'categories': ['Graph', 1, 0, data_length, 0],
-            'values': ['Graph', 1, 1, data_length, 1],
-            'points': [
-                {'fill': {'color': 'green'}},
-                {'fill': {'color': 'red'}},
-            ],
-        })
-
-        worksheet.insert_chart('F2',chart1)
-
-
-        # Close the Pandas Excel writer and output the Excel file.
-        writer.save()
-
-
-    def linearsvc(self):
-        result = {"supervised" : True}
-        pred = None
-        train = self.data.copy().loc[:, self.data.columns != self.response]
-        response = self.data[self.response]
-        print(self.response)
-        xtrain, xtest, ytrain, ytest = train_test_split(train, response, test_size=self.testsplit)
-        if self.gridsearch:
-            param_grid = [{
-                'C': [0.25, 0.5, 1, 1.5],
-                'tol': [1e-2, 1e-3, 1e-4],
-                'max_iter': [800, 1600, 2400, 5000]
-            }]
-            grid = GridSearchCV(LinearSVC(), param_grid, cv=5, return_train_score=True)
-            print(xtrain)
-            print(ytrain)
-            grid.fit(xtrain, ytrain)
-            pred = grid.predict(xtest)
-            result['model'] = grid
+    def generateXY(self, data):
+        process_limit = 1000
+        value_count = len(data) * len(data.columns)
+        if value_count > process_limit:
+            nums = data.iloc[:process_limit, :].select_dtypes(include=['float64', 'int64'])
         else:
-            lsvc = LinearSVC()
-            lsvc.fit(xtrain, ytrain)
-            pred = lsvc.predict(xtest)
-        result['acc'] = metrics.accuracy_score(ytest, pred)
-        result['recall'] = metrics.recall_score(ytest, pred, average='macro')
-        result['pre'] = metrics.precision_score(ytest, pred, average='macro')
-        result['f1'] = metrics.f1_score(ytest, pred, average='macro')
-        result['confusion'] = metrics.confusion_matrix(ytest, pred)
-        x,y,z = None,None,None
-        z = []
-        full = pd.DataFrame()
-        for i in range(len(xtrain)):
-            full = pd.concat([full, xtrain.iloc[[i]]])
-            z.append(0)
-        for i in range(len(xtest)):
-            full = pd.concat([full, xtest.iloc[[i]]])
-            if pred.tolist()[i] == ytest.tolist()[i]:
-                z.append(1)
-            else:
-                z.append(2)
-
-        print(full)
-        print(z)
-        graphinfo = {}
-        c_count = len(xtrain.columns)
-        if c_count > 2:
-            if self.reduction == 'auto':
-                tsne = TSNE(n_components=2, learning_rate='auto', init='random',random_state=1)
-                comps = tsne.fit_transform(full)
-                x = comps[:, 0]
-                y = comps[:, 1]
-
-
-        graphinfo['x'] = x
-        graphinfo['y'] = y
-        graphinfo['z'] = z
-        #graphinfo['g'] = response
-
-        result['graphinfo'] = graphinfo
-        if self.gridsearch:
-            result['bestp'] = grid.best_params_
-        self.createResult(result)
-        return result
-
-    def buildgraphinfo(self, train, response, model):
-        graphinfo = {}
-        c_count = len(train.columns)
-        if c_count > 2:
-            if self.reduction == 'auto':
-                tsne = TSNE(n_components=2, learning_rate='auto', init='random')
-                comps = tsne.fit_transform(train)
-                graphinfo['x'] = comps[:, 0]
-                graphinfo['y'] = comps[:, 1]
-        result = model.fit(train)
-        result = model.predict(train)
-        matches = []
-        for i in range(len(response.index)):
-            if response.iloc[i] == result[i]:
-                matches.append(1)
-            else:
-                matches.append(0)
-
-        graphinfo['z'] = matches
-        return graphinfo
-
-    def naivebayes(self):
-        pass
-
-    def kneighbor(self):
-        pass
-
-    def svc(self):
-        pass
-
-    def ensemble(self):
-        pass
-
-    def sgd(self):
-        pass
-
-    def kernal(self):
-        pass
-
-    def meanshift(self):
-        result = {"supervised": False}
-        pass
-
-    def vbgmm(self):
-        pass
-
-    def kmeans(self):
-        pass
-
-    def spectral(self):
-        pass
-
-    def gmm(self):
-        pass
-
-    def mkmeans(self):
-        pass
+            nums = data.select_dtypes(include=['float64', 'int64'])
+        tsne = TSNE(n_components=2, learning_rate='auto', init='pca')
+        tsne.fit(nums)
+        return tsne.fit_transform(nums)

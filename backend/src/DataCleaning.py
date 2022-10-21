@@ -9,6 +9,7 @@ def isDataValid(file):
     return True
 
 def CleanData(df):
+
     return df
 
 def FirstEntries(file):
@@ -18,7 +19,6 @@ def FirstEntries(file):
     data = CleanData(data)
     # print(type(data))
     # print(data)
-
     # # fC = list(data.columns.values)
     # # print(fC)
     # data = data.iloc[2: , :]
