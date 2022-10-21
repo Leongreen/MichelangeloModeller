@@ -16,6 +16,10 @@ export default function App() {
         <Route path="/DataCleaning" element={<Analysis><DataCleaning /></Analysis>} />
         <Route path="/Univariable" element={<Analysis><UniVarA /></Analysis>} />
         <Route path="/Bivariable" element={<Analysis><BivA /></Analysis>} />
+        <Route path="/MultiA" element={<Analysis><MultiA /></Analysis>} />
+        <Route path="/Randomization" element={<Analysis><Randomization /></Analysis>} />
+        <Route path="/Model" element={<Analysis><Model /></Analysis>} />
+        <Route path="/Export" element={<Analysis><Export /></Analysis>} />
       </Routes>
     </div>
   )
