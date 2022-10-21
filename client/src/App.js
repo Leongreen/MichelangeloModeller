@@ -1,56 +1,22 @@
-import React, {useState} from 'react'
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from "react-router-dom";
+import React from 'react';
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import DataUpload from './pages/DataUpload';
+import UniVarA from './pages/Univariable';
+import BivA from './pages/Bivariable';
+import Analysis from './pages/Analysis';
+import Navbar from './components/Navbar';
+import DataCleaning from './pages/DataCleaning';
 
-import './index.css';
-import DefaultPage from './components/DefaultPage';
-import WelcomePage from './components/WelcomePage';
-import UniVarA from "./components/UnivariateAnalysis"
-import DataReveal from './components/DataReveal';
-import BivA from './components/Bivariable';
-import ModelCreation from './components/ModelCreating';
-
-const App = () => {
-  const [raw_data, setRaw_data] = useState();
+export default function App() {
   return (
-    
-    <div className="min-h-screen bg-gradient-to-br from-cyan-900 to-[rgb(18,26,56)] bg-cover">
-        <Router>
-        <Switch>
-          {/* File Upload page */}
-          <Route exact path="/">
-            <WelcomePage></WelcomePage>
-          </Route>
-          <Route exact path="/DataReveal">
-            <DefaultPage>
-              <DataReveal></DataReveal>
-            </DefaultPage>
-          </Route>
-          {/* Univariable Analysis */}
-          <Route exact path="/UA">
-            <DefaultPage>
-                <UniVarA />
-            </DefaultPage>
-          </Route>
-          {/* Bivariable Analysis */}
-          <Route exact path="/BivA">
-            <DefaultPage>
-                <BivA />
-            </DefaultPage>
-          </Route>
-          {/* Model Creation */}
-          <Route exact path="/ModC">
-            <DefaultPage>
-                <ModelCreation />
-            </DefaultPage>
-          </Route>
-        </Switch>
-      </Router>  
+    <div className="bg-gray-300 min-h-screen ">
+      <Navbar />
+      <Routes>
+        <Route path="" element={<Analysis><DataUpload /></Analysis>} />
+        <Route path="/DataCleaning" element={<Analysis><DataCleaning /></Analysis>} />
+        <Route path="/Univariable" element={<Analysis><UniVarA /></Analysis>} />
+        <Route path="/Bivariable" element={<Analysis><BivA /></Analysis>} />
+      </Routes>
     </div>
-  );
-}
-
-export default App;
+  )
+};
