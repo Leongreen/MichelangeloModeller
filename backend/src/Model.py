@@ -141,6 +141,10 @@ class Model:
                 feature_space[x] = (feature_space[x] - feature_space[x].mean()) / feature_space[x].std()
         return feature_space
 
+    # unsupervised learning
+    def run_model(self,data):
+        pass
+
     def run_model(self,data, label):
         data = data
         labels = data[label]
