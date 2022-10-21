@@ -194,7 +194,7 @@ class Model:
         p = mlp.predict(X)
         # generate and return results
         results = {'Classifier': 'MLP Neural Network'}
-        results['summary'] = pd.concat([pd.DataFrame(metrics.classification_report(Y, p, output_dict=True)),pd.DataFrame(mlp.coefs_)],axis=0,join='outer')
+        results['summary'] = metrics.classification_report(Y, p, output_dict=True)
         results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
         print(f"MLP Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
         return results
