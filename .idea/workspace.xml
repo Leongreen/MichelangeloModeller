@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1c7de894-aff3-439c-bcb7-a2c1ab824eb7" name="Changes" comment="Commit msg 5 xlsxwriter" />
+    <list default="true" id="1c7de894-aff3-439c-bcb7-a2c1ab824eb7" name="Changes" comment="Commit msg 5 xlsxwriter">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/DataCleaning.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/DataCleaning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/Model.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/Model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/temp_results.xlsx" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Merge.Settings">
     <option name="BRANCH" value="origin/main" />
@@ -43,7 +56,9 @@
       <option name="presentableId" value="Default" />
       <updated>1664346683483</updated>
       <workItem from="1664346685351" duration="967000" />
-      <workItem from="1665372624095" duration="11113000" />
+      <workItem from="1665372624095" duration="13371000" />
+      <workItem from="1665976257331" duration="7000" />
+      <workItem from="1665991960230" duration="12416000" />
     </task>
     <task id="LOCAL-00001" summary="Commit msg 1">
       <created>1665468896962</created>
