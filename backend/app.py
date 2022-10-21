@@ -145,17 +145,27 @@ def applyModel():
         d = DataManager()
         d.ReadFile(raw_file)
         model = Model()
+        response = request.form['response']
+
+        if response is None:
+            model.run_model(d.df)
+        else:
+            results = model.run_model(d.df,request.form['response'])
+
 
         output.add_content(d.df,'Raw Data')
         output.add_content(model.data_transform(d.df),'Feature Space')
         output.add_content(d.df.corr(), 'Correlation')
 
-        results = model.run_model(d.df,request.form['response'])
         r_dict = {}
         for x in results:
             if x['summary'] is not None:
                 r_dict[x['Classifier']] = x['summary']
                 output.add_content(pd.DataFrame(x['summary']),x['Classifier'])
+
+
+        pca = model.generateXY(d.df)
+
 
         output.generate()
 
