@@ -45,7 +45,7 @@ class Multi_variable_analysis():
 
     def dummy_multi_linear_regression(self,categorical_variable,response_variable,prediction_variable:list):
         '''
-        This part contains two function,  one is to turn categorical variable into encoded variables and the
+        This part contains two part,  one is to turn categorical variable into encoded variables and the
         other is to run the regression model with a selected list of prediction variables (i.e. can be dummy
         variables included.)
         :param categorical_variable: The categorical variable in the dataframe that will be encoded
