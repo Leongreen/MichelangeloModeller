@@ -32,10 +32,10 @@ def FirstEntries(file):
 
     # print(data.iloc[1:4,1:2].values.tolist())
 
-    for i in range(3):
+    for i in range(len(data.columns)):
         returnEntries[i] = {
             'label': data.columns[i],
-            'data': data.iloc[0:3,i:i+1].values.tolist()
+            'data': data.iloc[0:len(data.columns),i:i+1].values.tolist()
         }
         # localList = data.iloc[1:4,i:i+1].values
         # returnEntries[i] = localList

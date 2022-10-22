@@ -15,6 +15,8 @@ from sklearn.compose import ColumnTransformer
 from sklearn.svm import LinearSVC
 from sklearn import metrics
 import numpy as np
+from timeout import timeoutt
+import config
 
 
 class Model:
@@ -151,15 +153,20 @@ class Model:
         data = data.drop(label, axis=1)
         feature_space = self.data_transform(data)
 
-        x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.25)
+        x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=config.TEST_SPLIT)
 
         classifiers = []
-        # SGDClassifier
-        classifiers.append(self.run_sgd(x_train, y_train, x_test, y_test))
-        classifiers.append(self.run_svc(x_train, y_train, x_test, y_test))
-        classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
-        classifiers.append(self.run_gaussian(x_train, y_train, x_test, y_test))
+
+        with timeout(seconds=config.TIMEOUT):
+            classifiers.append(self.run_sgd(x_train, y_train, x_test, y_test))
+        with timeout(seconds=config.TIMEOUT):
+            classifiers.append(self.run_svc(x_train, y_train, x_test, y_test))
+        with timeout(seconds=config.TIMEOUT):
+            classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
+        with timeout(seconds=config.TIMEOUT):
+            classifiers.append(self.run_gaussian(x_train, y_train, x_test, y_test))
         return classifiers
+
 
     def run_sgd(self, x, y, X, Y):
         # create the classifier object
@@ -175,6 +182,7 @@ class Model:
         print(f"SGD Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
         return results
 
+
     def run_svc(self, x, y, X, Y):
         # create the classifier object
         svc = LinearSVC()
@@ -189,6 +197,7 @@ class Model:
         print(f"SVC Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
         return results
 
+
     def run_mlp(self, x, y, X, Y):
         # create the classifier object
         mlp = MLPClassifier()
@@ -202,6 +211,7 @@ class Model:
         results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
         print(f"MLP Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
         return results
+
 
     def run_gaussian(self, x, y, X, Y):
         results = {'Classifier': 'Gaussian Process'}

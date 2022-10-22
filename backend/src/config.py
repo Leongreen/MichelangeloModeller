@@ -1,0 +1,2 @@
+TIMEOUT = 5
+TEST_SPLIT = 0.25

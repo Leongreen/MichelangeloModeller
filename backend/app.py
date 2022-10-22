@@ -3,8 +3,7 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 
-from src.Model import *
-from src.ModelControl import *
+from src.Model import Model
 from src.Bivariable_analysis import Bivariable_analysis
 from src.univariabel_analysis import Univariable
 from src.univariabel_histogram import Univariable_histogram
