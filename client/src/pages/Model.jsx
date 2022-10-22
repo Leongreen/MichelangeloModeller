@@ -1,3 +1,4 @@
+import SelectionMenu from '../components/SelectionMenu';
 import React from 'react';
 
 const Model = () => {

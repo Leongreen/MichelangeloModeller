@@ -11,6 +11,8 @@ from src.excelgen import excelgen
 from src.DataManager import DataManager
 from src.DataCleaning import *
 
+from src.timeout import timeout
+
 import pandas as pd
 import numpy as np
 
@@ -37,7 +39,7 @@ def FirstEntriesToFE():
     if request.method == 'POST':
         raw_file = request.files['file']
         a = FirstEntries(raw_file)
-        print(a)
+
         return jsonify(a)
     return "A get method was launched"
 
@@ -162,6 +164,8 @@ def applyModel():
                 r_dict[x['Classifier']] = x['summary']
                 output.add_content(pd.DataFrame(x['summary']),x['Classifier'])
 
+        for x in r_dict.keys():
+            r_dict[x] = pd.DataFrame(r_dict[x]).to_json()
 
         pca = model.generateXY(d.df)
 

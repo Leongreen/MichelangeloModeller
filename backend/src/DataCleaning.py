@@ -21,6 +21,7 @@ def FirstEntries(file):
     # print(data)
     # # fC = list(data.columns.values)
     # # print(fC)
+
     # data = data.iloc[2: , :]
     # for columns in data:
     #     print(columns)
