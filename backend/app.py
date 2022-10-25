@@ -149,15 +149,28 @@ def applyModel():
         response = request.form['response']
 
         if response is None:
+            # NOTE: unsupervised learning is unimplemented
             model.run_model(d.df)
         else:
-            results = model.run_model(d.df,request.form['response'])
+            results = model.run_model(d.df,response)
+        # return form is a list of following dicts for each algorithm:
 
+        # dict['Classifier'] : name of classifier. The user should see this
+        # dict['ConfusionMatrix'] : ndarray showing TP, TN, FN, FP. Useful for user but not necessary
+        # dict['summary'] : dict containing acc, pre, recall, f1 ect. The user should see this
 
+        # NOTE it might be easier to convert dict['summary'] to a dataframe then to json
+        #results[x]['summary'] = pd.Dataframe(results[x]['summary'])
+
+        # Classifiers should be ranked by dict['summary']['accuracy']
+
+        # add excel output sheets
         output.add_content(d.df,'Raw Data')
         output.add_content(model.data_transform(d.df),'Feature Space')
         output.add_content(d.df.corr(), 'Correlation')
 
+
+        # loops over dicts and add them to the output
         r_dict = {}
         for x in results:
             if x['summary'] is not None:
@@ -167,6 +180,8 @@ def applyModel():
         for x in r_dict.keys():
             r_dict[x] = pd.DataFrame(r_dict[x]).to_json()
 
+        # any data passed to 'generateXY()' will be transformed from N x N to 2 X N.
+        # used for visualising data
         pca = model.generateXY(d.df)
 
 
