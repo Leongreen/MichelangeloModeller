@@ -7,7 +7,7 @@ const Analysis = ({children}) => {
 
     return (
             <div className='h-full mt-16 '>
-                <div className='bg-gray-200 rounded-lg shadow-lg mx-auto max-w-[1200px] border border-gray-400'>
+                <div className='bg-gray-200 rounded-lg shadow-lg mx-auto max-w-[1400px] border border-gray-400'>
                     <div className=''>
                         <div className='grid grid-cols-5'>
                             <div className='bg-white h-full w-full rounded-l-lg border-r border-slate-300'>

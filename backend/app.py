@@ -79,6 +79,35 @@ def univariableAnalysisTABLEq():
         return jsonify(a.singular_quantile(var))
     return "A get method was launched"
 
+
+# Obtaining attributes for the uni table
+@app.route("/univariableAnalysisTABLEAll", methods=['GET', 'POST'])
+def univariableAnalysisTABLEAll():
+    if request.method == 'POST':
+        # An actual file that can be read with data manager.
+        raw_file = request.files['file'] 
+        var = request.form['var'] 
+
+        a = Univariable(raw_file)
+        a.datainjesting()
+
+        return jsonify(a.unvariable_analysis())
+    return "A get method was launched"
+
+# Obtaining attributes for the quantile table
+@app.route("/univariableAnalysisTABLEqAll", methods=['GET', 'POST'])
+def univariableAnalysisTABLEqAll():
+    if request.method == 'POST':
+        # An actual file that can be read with data manager.
+        raw_file = request.files['file'] 
+        var = request.form['var'] 
+
+        a = Univariable(raw_file)
+        a.datainjesting()
+
+        return jsonify(a.singular_quantile(var))
+    return "A get method was launched"
+
 # Obtaining a dict with histogram data
 @app.route("/univariableAnalysisHistogram", methods=['GET', 'POST'])
 def univariableAnalysisHistogram():
