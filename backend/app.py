@@ -215,7 +215,6 @@ def applyModel():
         # result[classifier_name] : table showing stats about that classifier
 
         output.generate()
-
         return jsonify(results)
     return "A get method was launched"
 

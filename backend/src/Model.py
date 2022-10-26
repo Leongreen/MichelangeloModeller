@@ -124,12 +124,10 @@ class Model:
 
                     #n = list(x['summary'][i].values())
                     #c_report.append(list([round(item, 2) for item in n]))
-
             result[x['Classifier']] = list(c_report)
 
-
         result['classifiers'] = list(models)
-        result['graph'] = list(self.generateXY(data))
+        result['graph'] = self.generateXY(data)
         result['graphlabel'] = list(labels)
         result['summarytable'] = list(summaryTable)
         result['output'] = classifiers
@@ -211,6 +209,6 @@ class Model:
             nums = data.select_dtypes(include=['float64', 'int64'])
         # create the T-SNE object and fit it to the numerical columns
         tsne = TSNE(n_components=2, learning_rate='auto', init='pca')
-        tsne.fit(nums)
+        comps = pd.DataFrame(tsne.fit_transform(nums))
         # return the nums dataframe which consists of 2 columns of principle components
-        return tsne.fit_transform(nums)
+        return list([list(comps.iloc[:,0]),list(comps.iloc[:,1])])
