@@ -205,13 +205,6 @@ def applyModel():
 
         # result[classifier_name] : table showing stats about that classifier
 
-
-
-
-        # any data passed to 'generateXY()' will be transformed from N x N to 2 X N.
-        # used for visualising data
-        pca = model.generateXY(d.df)
-
         output.generate()
 
         return jsonify(rows)
