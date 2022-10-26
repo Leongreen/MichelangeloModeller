@@ -32,7 +32,7 @@ const Model = () => {
                 // let d = data[var1];
 
                 setTable1(<HorizontalTable title="Classifiers"
-                                           description="The following table will show basic Classification performance for the selected variable."
+                                           description="The following table will show basic Classification performance of each model"
                                            labels={['Classifier', 'Accuracy']} data={
                                            [[data.summarytable[0][0], data.summarytable[0][1].toFixed(2)],
                                             [data.summarytable[1][0], data.summarytable[1][1].toFixed(2)],
