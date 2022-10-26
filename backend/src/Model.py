@@ -118,7 +118,8 @@ class Model:
             c_report = []
             for i in x['summary'].keys():
                 if type(x['summary'][i]) != float:
-                    c_report.append(list(round(x['summary'][i].values(),2)))
+                    n = list(x['summary'][i].values())
+                    c_report.append([round(item, 2) for item in n])
 
             result[x['Classifier']] = c_report
 
