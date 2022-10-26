@@ -19,8 +19,7 @@ class Bivariable_analysis():
         self.path = path
 
     def convert_format(self):
-        data = pd.DataFrame(self.path)
-        corr = data.corr()
+        corr = self.data.corr()
         labels = list(corr.columns)
         output = {}
         for i in range(corr.shape[0] + 1):
@@ -37,7 +36,7 @@ class Bivariable_analysis():
                     else:
                         row.append(corr.iloc[i-1,j-1])
             output[i] = row
-
+        print(corr)
         return output
 
     def datainjesting(self):

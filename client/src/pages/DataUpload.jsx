@@ -92,7 +92,7 @@ const DataUpload = () => {
     return (
         <div className='h-full'>
             <div className='px-8 py-8  h-full gap-4'>
-                <div className='w-full h-fully'>
+                <div className='h-full'>
                     <div className='mx-auto my-auto'>
                         <input type="file" id="file" accept=".csv, .xlsx, .xls, .parquet, .txt, .json" hidden="hidden"></input>
                         <button onClick={uploadDataset} className='bg-white border transition border-gray-400 rounded-xl

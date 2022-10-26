@@ -17,6 +17,7 @@ export default class SelectionMenu extends React.Component {
     }
 
     ChangeState = (v) => {
+        console.log(this.label)
         document.getElementById(this.label).innerHTML = v;
         this.setState(v);
     }
