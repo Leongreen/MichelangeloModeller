@@ -1,6 +1,7 @@
 from re import M
 from flask import Flask
 from flask import request
+from flask import send_file
 from flask import jsonify
 
 from src.Model import Model
@@ -250,7 +251,7 @@ def downloadResults():
         # result[classifier_name] : table showing stats about that classifier
 
         output.generate()
-        return jsonify(results)
+        return send_file('temp_results.xlsx')
     return "A get method was launched"
 
 @app.route("/ObtainPredictions", methods=['GET', 'POST'])

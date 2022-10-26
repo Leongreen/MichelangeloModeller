@@ -20,7 +20,7 @@ const Model = () => {
         fd.append('file', file);
         fd.append('response', window.responseVar);
 
-        // Table for Mean/Mode/Median/SD
+        
         fetch("/applyModel", {
             method: 'POST',
             body: fd

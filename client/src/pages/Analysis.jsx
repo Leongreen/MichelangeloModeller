@@ -7,24 +7,25 @@ const Analysis = ({children}) => {
 
     function downloadResults(){
         let fd = new FormData()
-        let file = new File([new Blob([window.data])],
+        let f = new File([new Blob([window.data])],
             sessionStorage.getItem('raw_file_fileName'));
 
-        fd.append('file', file);
+        fd.append('file', f);
         fd.append('response', window.responseVar);
-
-
         fetch("/downloadResults", {
             method: 'POST',
             body: fd
-        }).then(
-            res => res.json()
-        ).then(
-            data => {
-                console.log(data);
-                
-            }
-        );
+        }).then(resp => resp.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = "results.xlsx";
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            })
         
     }
 
