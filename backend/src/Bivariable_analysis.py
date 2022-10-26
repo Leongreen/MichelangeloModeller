@@ -30,13 +30,66 @@ class Bivariable_analysis():
 
     def full_correlation_analysis(self):
         """
-        This returns the all correlation value and their coresponding p-values (maybe p-value)
-         for all the numerical variables
+        This returns the all correlation value and their coresponding p-values in a form that suits the GUI
+        {0: [' ','sepal.length', 'sepal.width','petal.length','petal.width'], 1:[sepal.length, 1, -0.11, 0.87, 0.81] etc}
         :return:
         """
         df = self.data
-        full_correlation_value = df.corr()
-        return full_correlation_value
+        corr = df.corr()
+        a_dict = {0:['']}
+        a_list = []
+
+        # for i in full_correlation_value:
+        #     print(i)
+        # print(type(full_correlation_value))
+        # test = full_correlation_value.iloc[0:len(full_correlation_value)]
+        # test_0 = full_correlation_value.iloc[0:len(full_correlation_value),0]
+        # print(test)
+        # print(test_0)
+        # # for column_index in range(len(full_correlation_value)):
+        # #     print(full_correlation_value.iloc[column_index]) # this return me the rows
+        # #     for element in full_correlation_value.iloc[column_index]: #these are elment in rows
+        # #         a_list.append(element)
+        # # print(a_list) #this is a list that contains all elements in the rows
+        # for column_index in range(len(full_correlation_value)):
+        #     for elelment in full_correlation_value.iloc[0:len(full_correlation_value),column_index]:#this is elments in each row
+        #         a_dict[column_index] = [''] +
+
+
+        labels = list(corr.columns)
+        output = {}
+        for i in range(corr.shape[0] + 1):
+            row = []
+            for j in range(corr.shape[0] + 1):
+                if (i == 0):
+                    if (j == 0):
+                        row.append(' ')
+                    else:
+                        row.append(labels[j - 1])
+                else:
+                    if (j == 0):
+                        row.append(labels[i - 1])
+                    else:
+                        row.append(corr.iloc[i - 1, j - 1])
+            output[i] = row
+
+        return output
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def singular_correlation_analysis(self, variable_1, variable_2):
         """
