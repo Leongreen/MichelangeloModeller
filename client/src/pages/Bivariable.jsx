@@ -151,9 +151,9 @@ const BivA = () => {
                             labels={[]} data={[]} ></HorizontalTable>}
                 </div>
                 
-                <div className="mr-4 mt-4 grow w-full col-span-2">
+                <div className="shadow-md h-full border border-gray-400 bg-gray-100 col-span-2 mx-4 mb-4 min-h-[400px]">
                     
-                    <div id="graph" className="w-full ml-2 mb-4 ">
+                    <div id="graph" className="mx-4 my-4">
 
                     </div>
                 </div>

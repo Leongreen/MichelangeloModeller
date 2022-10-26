@@ -18,7 +18,7 @@ export default function DataCleaning () {
                     <CheckBoxTable  givenState={responseState} title="Column Selection" description="Manually select columns to use during analysises and modelling. Prediction column will be visible only if response variable is chosen"></CheckBoxTable>
                 </div>
                 <div className='w-[400px]'>
-                    <ResponseTable setParentState={setResponseState} title="Response Column" description="Chose a response variable for the model creation. The response variable can only be non-numerical column therefore you will not have majority of columns shown here"></ResponseTable>
+                    <ResponseTable setParentState={setResponseState} title="Response Column" description="Chose a response variable for the model creation. The response variable can only be non-numerical column therefore you will not have majority of columns shown"></ResponseTable>
                 </div>
                 
             </div>

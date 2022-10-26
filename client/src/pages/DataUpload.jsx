@@ -40,10 +40,10 @@ const DataUpload = () => {
                 ).then(
                     data => {
                         // Setting UseState to remember the file
-                        window.data = JSON.stringify(data)
+                        window.data_raw = JSON.stringify(data)
                         fd = new FormData();
                         sessionStorage.setItem('raw_file_fileName', filename.substr(0, filename.indexOf('.')) + '.json')
-                        file = new File([new Blob([window.data])],
+                        file = new File([new Blob([window.data_raw])],
                             sessionStorage.getItem('raw_file_fileName'))
                         
                         fd.append('file', file)
@@ -91,35 +91,31 @@ const DataUpload = () => {
 
     return (
         <div className='h-full'>
-            <div className='px-8 py-8  h-full gap-4'>
-                <div className='h-full'>
-                    <div className='mx-auto my-auto'>
-                        <input type="file" id="file" accept=".csv, .xlsx, .xls, .parquet, .txt, .json" hidden="hidden"></input>
-                        <button onClick={uploadDataset} className='bg-white border transition border-gray-400 rounded-xl
-                        grid gap-2 content-center
-                        shadow-md
-                        px-16
-                        hover:bg-slate-300
-                        hover:transition
-                        mt-8 mx-auto
-                        text-2xl text-gray-700'>
-                            <div className='conter-center mx-auto my-auto mb-8'>
-                                <svg className=" mt-8
-                                stroke-[rgb(23,66,112)] w-32 h-32 "
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                                    stroke="#334155">
-                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-                                </svg>
-                            </div>
-                            <div className='mb-8'>
-                                Upload Dataset
-                            </div>
-                        </button>
-                        <div className='mt-12 mx-12 max-h-[400px] overflow-hidden hover:overflow-y-scroll'>
-                            {dataLoaded? <div className='w-full h-full mb-8'>{table}</div> : <LoadingSpinner/>}
-                        </div>
+            <div className='mx-auto my-auto'>
+                <input type="file" id="file" accept=".csv, .xlsx, .xls, .parquet, .txt, .json" hidden="hidden"></input>
+                <button onClick={uploadDataset} className='bg-white border transition border-gray-400 rounded-xl
+                grid gap-2 content-center
+                shadow-md
+                px-16
+                hover:bg-slate-300
+                hover:transition
+                mt-8 mx-auto
+                text-2xl text-gray-700'>
+                    <div className='conter-center mx-auto my-auto mb-8'>
+                        <svg className=" mt-8
+                        stroke-[rgb(23,66,112)] w-32 h-32 "
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
+                            stroke="#334155">
+                            <path strokeLinecap="round" strokeLinejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+                        </svg>
                     </div>
+                    <div className='mb-8'>
+                        Upload Dataset
+                    </div>
+                </button>
+                <div className='mt-12 mx-8 max-h-[400px] overflow-hidden hover:overflow-y-scroll max-w-[1200px]'>
+                    {dataLoaded? <div className='w-full h-full mb-8'>{table}</div> : <LoadingSpinner/>}
                 </div>
             </div>
         </div>

@@ -12,9 +12,11 @@ from src.excelgen import excelgen
 from src.DataManager import DataManager
 from src.DataCleaning import *
 from src.Multi_linear_regression import Multi_variable_analysis
+from src.Data_cleaning import DataCleaning
 
 from src.timeout import timeout
 
+import json
 import pandas as pd
 import numpy as np
 
@@ -101,12 +103,12 @@ def univariableAnalysisTABLEAll():
     if request.method == 'POST':
         # An actual file that can be read with data manager.
         raw_file = request.files['file'] 
-        var = request.form['var'] 
+
 
         a = Univariable(raw_file)
         a.datainjesting()
 
-        return jsonify(a.unvariable_analysis())
+        return jsonify(a.full_unvariable_analysis())
     return "A get method was launched"
 
 # Obtaining attributes for the quantile table
@@ -287,6 +289,21 @@ def CorrelationMatrix():
         return jsonify(a.convert_format())
     return "A get method was launched"
 
+@app.route("/DropColumns", methods=['GET', 'POST'])
+def DropColumns():
+    if request.method == 'POST':
+        # An actual file that can be read with data manager.
+        raw_file = request.files['file']
+
+        columnList = request.form['columnList']
+
+        a = DataCleaning(raw_file)
+        # print(json.loads(columnList))
+        # return ''
+        df = a.select_columns(json.loads(columnList))
+        print(df)
+        return df.to_json()
+    return "A get method was launched"
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host='0.0.0.0')

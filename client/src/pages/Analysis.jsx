@@ -41,7 +41,7 @@ const Analysis = ({children}) => {
                                     <button onClick={() => navigate('/Univariable')} className='transition text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 '>Univariable Analysis</button>
                                     <button onClick={() => navigate('/Bivariable')} className='transition text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 '>Bivariable Analysis</button>
                                     <button onClick={() => navigate('/MultiA')} className='transition text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 '>Multilinear Regression</button>
-                                    <button onClick={() => navigate('/Model')} className='transition text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 border-b'>Model Creation</button>
+                                    <button onClick={() => navigate('/Model')} className='transition text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 border-b'>Model</button>
                                     <button onClick={() => downloadResults()} className='transition text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 border-b'>Export Results</button>
                                 </div>
                             </div>

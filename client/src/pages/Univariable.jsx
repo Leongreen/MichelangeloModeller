@@ -60,18 +60,14 @@ const UniVarA = () => {
             res=>res.json()
         ).then(
             data=> {
-                console.log(data)
+    
+                let tableData = []
+                for (let i = 0; data.mean[i] !== undefined; i++) {
+                    tableData.push([data.labels[i], data.mean[i].toFixed(2), data.mode[i].toFixed(2), data.Median[i].toFixed(2), data.Standard_deviation[i].toFixed(2)])
+                }
+                console.log(data.mean)            
                 
-                // MODE/MEAN/MEDIAN/SD TABLE
-
-                let tableData = [  [
-                                    data.mean,
-                                    data.mode.toFixed(2),
-                                    data.Median.toFixed(2),
-                                    data.Standard_deviation.toFixed(2)]]
-                                    
-                
-                setTable3(  <HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
+                setTable3(  <HorizontalTable title="Full Univariable Analysis Table" description="The following table will show full univariable description for the dataset."
                             labels={['Label','Mean','Mode', 'Median', 'SD']} data={tableData} ></HorizontalTable>);
 
                 
@@ -97,7 +93,7 @@ const UniVarA = () => {
                                     
                 setTable2(  <HorizontalTable title="Quantile Table" description="The following table will show several common quantiles for the selected variable."
                             labels={['0%','25%','50%', '75%', '100%']} data={tableData} ></HorizontalTable>);
-                setTablesLoaded(true);
+                
             }
         );
 
@@ -125,6 +121,7 @@ const UniVarA = () => {
 
                     radius: 32,
                     margin: {
+                        height: 406,
                         b:32,
                         t:24,
                         r:32,
@@ -135,7 +132,7 @@ const UniVarA = () => {
                 let d = [traces];
                 document.getElementById('graph').innerText = ''
                 Plotly.newPlot('graph', d, layout, {responsive: true});
-                
+                setTablesLoaded(true);
             }
         );
     }
@@ -150,9 +147,9 @@ const UniVarA = () => {
         
         <div>
             {/* Main grid */}
-            <div className="grid-flow-row-dense grid grid-rows-2 grid-cols-2 mx-4 my-4 gap-4 grow ">
+            <div className="flex-wrap flex mx-4 my-4 gap-4 grow ">
                 {/* Variable Selector */}
-                <div className=" max-h-[400px] ">
+                <div className=" max-h-[400px] mb-16">
                     <div className="shadow-lg">
                         <VariableSelector setState={setVar1} label="Select Variable"></VariableSelector>
                     </div>
@@ -170,31 +167,21 @@ const UniVarA = () => {
                 
                 {/* Full Description */}
                 <div className="max-h-[600px]">
-                    <div className="grid grid-rows-2 gap-2 ">
+
                         <div className="w-full mx-auto" id="table3">
                             {tablesLoaded? table3 : <HorizontalTable title="Full Univariable Analysis Table" description="The following table will show full univariable description for the dataset."
                                                     labels={['Label','Mean','Mode', 'Median', 'SD']} data={[]} ></HorizontalTable>}
                         </div>
-                        <div className="w-full mx-auto " id="table4">
-                            {tablesLoaded? table4 : <HorizontalTable title="Full Quantile Table" description="The following table will show full quantile description for the dataset."
-                                                    labels={['0%','25%','50%', '75%', '100%']} data={[]} ></HorizontalTable>}
-                        </div>
-                    </div>
-                </div>
-                
-
-
-                {/* Graph */}
-                <div className="shadow-md h-full border border-gray-400 bg-gray-100 col-span-2">
-                    <div id="graph" className="mx-4 my-4">
-
-                    </div>
+                        
                 </div>
 
             </div>
+            {/* Graph */}
+                <div className="shadow-md h-full border border-gray-400 bg-gray-100 col-span-2 mx-4 mb-4 min-h-[400px]">
+                    <div id="graph" className="mx-4 my-4 ">
 
-
-
+                    </div>
+                </div>
         </div>
     )
 }

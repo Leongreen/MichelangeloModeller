@@ -6,7 +6,7 @@
 import pandas as pd
 from io import StringIO
 from pandas import util
-from DataManager import DataManager
+from .DataManager import DataManager
 from sklearn.impute import SimpleImputer
 import numpy as np
 
@@ -134,9 +134,9 @@ class DataCleaning():
 
 
 
-path = r"C:\Users\Willi\Desktop\aut degree\Second year\R_and_D\Semester 2\Clean_coding\MichelangeloModeller\backend\src\iris.csv"
-a = DataCleaning(path)
-print(a.replace_null_by_median())
+# path = r"C:\Users\Willi\Desktop\aut degree\Second year\R_and_D\Semester 2\Clean_coding\MichelangeloModeller\backend\src\iris.csv"
+# a = DataCleaning(path)
+# print(a.replace_null_by_median())
 
 
 
