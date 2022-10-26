@@ -18,7 +18,7 @@ const UniVarA = () => {
     const [table3, setTable3] = useState(<HorizontalTable title="Full Univariable Analysis Table" description="The following table will show full univariable description for the dataset."
     labels={['Label','Mean','Mode', 'Median', 'SD']} data={[]} ></HorizontalTable>)
     const [table4, setTable4] = useState(<HorizontalTable title="Full Quantile Table" description="The following table will show full quantile description for the dataset."
-    labels={['0','25%','50%', '75%', '100%']} data={[]} ></HorizontalTable>);
+    labels={['0%','25%','50%', '75%', '100%']} data={[]} ></HorizontalTable>);
 
     function updateTables(){
         setTablesLoaded(false);
@@ -64,10 +64,11 @@ const UniVarA = () => {
                 
                 // MODE/MEAN/MEDIAN/SD TABLE
 
-                let tableData = [   [data.mean,
-                    data.mode.toFixed(2),
-                    data.Median.toFixed(2),
-                    data.Standard_deviation.toFixed(2)]]
+                let tableData = [  [
+                                    data.mean,
+                                    data.mode.toFixed(2),
+                                    data.Median.toFixed(2),
+                                    data.Standard_deviation.toFixed(2)]]
                                     
                 
                 setTable3(  <HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
@@ -95,7 +96,7 @@ const UniVarA = () => {
                                     data[4].toFixed(2)]]
                                     
                 setTable2(  <HorizontalTable title="Quantile Table" description="The following table will show several common quantiles for the selected variable."
-                            labels={['0','25%','50%', '75%', '100%']} data={tableData} ></HorizontalTable>);
+                            labels={['0%','25%','50%', '75%', '100%']} data={tableData} ></HorizontalTable>);
                 setTablesLoaded(true);
             }
         );
@@ -144,123 +145,6 @@ const UniVarA = () => {
         updateTables()
         
     }, [var1]);
-    
-
-
-    // Updating the tables and graphs on the page
-    const updateVisualization = (e) => {
-
-        
-        
-
-
-        // // Table for Quantiles
-        // fetch("/univariableAnalysisTABLEq",{
-        //     method: 'POST',
-        //     body: fd
-        // }).then(
-        //     res=>res.json()
-        // ).then(
-        //     data=> {
-
-        //         // MODE/MEAN/MEDIAN/SD TABLE
-        //         let lab = ['25%','50%', '75%', '100%']
-        //         let tableData = [   [data[1].toFixed(2)],
-        //                             [data[2].toFixed(2)],
-        //                             [data[3].toFixed(2)],
-        //                             [data[4].toFixed(2)]]
-
-        //         //document.getElementById('table2').innerHTML = generateATable(lab, tableData);
-
-
-        //     }
-        // );
-
-
-        // // ALL DESCRIPTORS
-        // // Table for Mean/Mode/Median/SD
-        // fetch("/univariableAnalysisTABLEAll",{
-        //     method: 'POST',
-        //     body: fd
-        // }).then(
-        //     res=>res.json()
-        // ).then(
-        //     data=> {
-        //         console.log(data)
-
-        //         // MODE/MEAN/MEDIAN/SD TABLE
-        //         let lab = ['Mean','Mode', 'Median', 'SD']
-        //         let tableData = [   [data.mean.toFixed(2)],
-        //                             [data.mode.toFixed(2)],
-        //                             [data.Median.toFixed(2)],
-        //                             [data.Standard_deviation.toFixed(2)]]
-
-        //         document.getElementById('table3').innerHTML = generateATable(lab, tableData);
-
-
-        //     }
-        // );
-
-        // // Table for Quantiles
-        // fetch("/univariableAnalysisTABLEqAll",{
-        //     method: 'POST',
-        //     body: fd
-        // }).then(
-        //     res=>res.json()
-        // ).then(
-        //     data=> {
-
-        //         // MODE/MEAN/MEDIAN/SD TABLE
-        //         let lab = ['25%','50%', '75%', '100%']
-        //         let tableData = [   [data[1].toFixed(2)],
-        //                             [data[2].toFixed(2)],
-        //                             [data[3].toFixed(2)],
-        //                             [data[4].toFixed(2)]]
-
-        //         document.getElementById('table4').innerHTML = generateATable(lab, tableData);
-
-
-        //     }
-        // );
-
-        // // Plotting a graph
-        // fetch("/univariableAnalysisHistogram",{
-        //     method: 'POST',
-        //     body: fd
-        // }).then(
-        //     res=>res.json()
-        // ).then(
-        //     data=> {
-        //         let traces = {
-        //             x: data.data_in_list,
-        //             type: 'histogram',
-        //             marker: {
-        //                 color: "rgba(68,107,166,0.7)",
-        //                 line: {
-        //                     color: "rgba(68,107,166,1)",
-        //                     width:1
-        //                 }
-        //             },
-        //             opacity: 0.6
-        //         }
-        //         let layout = {
-        //             height: 352,
-        //             radius: 32,
-        //             margin: {
-        //                 b:32,
-        //                 t:24,
-        //                 r:32,
-        //                 l:24,
-                        
-        //             }
-        //         }
-        //         let d = [traces];
-        //         document.getElementById('graph').innerText = ''
-        //         Plotly.newPlot('graph', d, layout, {responsive: true});
-                
-        //     }
-        // );
-    }
 
     return (
         
@@ -293,7 +177,7 @@ const UniVarA = () => {
                         </div>
                         <div className="w-full mx-auto " id="table4">
                             {tablesLoaded? table4 : <HorizontalTable title="Full Quantile Table" description="The following table will show full quantile description for the dataset."
-                                                    labels={['Label','0','25%','50%', '75%', '100%']} data={[]} ></HorizontalTable>}
+                                                    labels={['0%','25%','50%', '75%', '100%']} data={[]} ></HorizontalTable>}
                         </div>
                     </div>
                 </div>

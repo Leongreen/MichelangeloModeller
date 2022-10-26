@@ -12,7 +12,7 @@ export default function ResponceTable(props) {
         
         fd.append('file', file)
         
-        fetch("/ObtainColumnNames",{
+        fetch("/ObtainResponseColumnNames",{
             method: 'POST',
             body: fd
         }).then(
@@ -26,8 +26,8 @@ export default function ResponceTable(props) {
 
     function generateTH() {
         let TR = [];
-        for (let i = 0; i < props.labels.length; i++) {
-            TR.push(<th scope="col" className="border py-3 px-8">{props.labels[i]}</th>);
+        for (let i = 0; i < labels.length; i++) {
+            TR.push(<th scope="col" className="border py-3 px-8">{labels[i]}</th>);
         }
         return TR;
     }
@@ -35,7 +35,7 @@ export default function ResponceTable(props) {
         let TD = [];
         
         TD.push(<td scope="col" className="border py-2 px-8 transition hover:bg-gray-200">{labels[i]}</td>);
-        TD.push(<td scope="col" className="border py-2 px-8 transition "><Toggle default={true}></Toggle></td>)
+        TD.push(<td scope="col" className="border py-2 px-8 transition "><Toggle default={false}></Toggle></td>)
         return TD;
     }
     function generateTD() {

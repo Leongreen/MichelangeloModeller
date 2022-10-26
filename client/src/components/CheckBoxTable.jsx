@@ -19,7 +19,6 @@ export default function CheckBoxTable(props) {
             res=>res.json()
         ).then(
             data=> {
-                console.log(data)
                 setLabels(data);
             })
     }, [loaded])

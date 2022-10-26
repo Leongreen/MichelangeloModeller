@@ -54,6 +54,14 @@ def ObtainColumnNames():
         return jsonify(ObtainDataLabels(raw_file))
     return "A get method was launched"
 
+@app.route("/ObtainResponseColumnNames", methods=['GET', 'POST'])
+def ObtainResponseColumnNames():
+    if request.method == 'POST':
+        raw_file = request.files['file']
+        d = DataManager()
+        d.ReadFile(raw_file)
+        return jsonify(cat_labels(d.df))
+    return "A get method was launched"
 
 # Obtaining attributes for the uni table
 @app.route("/univariableAnalysisTABLE", methods=['GET', 'POST'])
