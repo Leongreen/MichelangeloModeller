@@ -1,20 +1,62 @@
-import React from 'react';
+import React, {useState, useEffect } from "react"
+import generateATable from "../functions/TableCreator.js";
+import VariableSelector from "../components/VariableSelector";
+import Plotly from 'plotly.js-dist';
+import HorizontalTable from "../components/HorizontalTable.jsx";
 
 const BivA = () => {
-    return (
-        <div className='h-full'>
-            <div className='px-8 py-8 grid grid-cols-2 grid-rows-3 h-full gap-4'>
-                <div className='w-full h-full bg-gray-100 border border-gray-400 rounded-lg shadow-sm'>
-                    <div className='px-2 py-2'>Here goes Variable selection and a table</div>
-                </div>
-                <div className='w-full h-full bg-gray-100 border border-gray-400 rounded-lg shadow-sm'>
-                    <div className='px-2 py-2'>Here goes forecasting</div>
-                </div>
-                <div className='w-full h-full bg-gray-100 border border-gray-400 rounded-lg shadow-sm col-span-2 row-span-2'>
-                    <div className='px-2 py-2'>Here goes the graph</div>
-                </div>
+    const [tablesLoaded, setTablesLoaded] = useState(false);
 
+    const [var1, setVar1] = useState('DefaultVariable');
+    const [var2, setVar2] = useState('DefaultVariable');
+    const [table1, setTable1] = useState(<HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
+    labels={['Slope','Intercept', 'R_sqr', 'P_value']} data={[]} ></HorizontalTable>)
+
+
+    useEffect((lab, tableData) => {
+
+    });
+
+
+
+    return (
+        <div className="mb-4">
+            {/* Title */}
+            <h1 className='flex items-center justify-center
+            mt-4 text-3xl text-gray-700 font-semibold'>Bivariate Analysis</h1>
+
+            {/* Grid */}
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-4 md:mr-0 mr-4">
+                {/* Selection tab and  a table*/}
+                <div className=" bg-gray-200 ml-5 mt-4 grow">
+                    {/* Selection tab */}
+                    <div className="grid grid-rows-2 gap-4">
+                        <div className="shadow-lg">
+                            <VariableSelector setState={setVar1} label="Select Variable"></VariableSelector>
+                        </div>
+                        <div className="shadow-lg">
+                            <VariableSelector setState={setVar2} label="Select Variable"></VariableSelector>
+                        </div>
+                    </div>
+                    
+                    {/* Table */}
+
+                    <div className="mx-auto text-gray-700 text-center mt-4">
+                    {tablesLoaded? table1 : <HorizontalTable title="Quantile Table" description="The following table will show several common quantiles for the selected variable."
+                            labels={['Slope','Intercept', 'R_sqr', 'P_value']} data={[]} ></HorizontalTable>}
+                    </div>
+
+
+
+                </div>
+                <div className="mr-4 mt-4 grow w-256">
+                    
+                    <div id="graph" className="ml-8 mb-4 pr-32">
+
+                    </div>
+                </div>
             </div>
+            
         </div>
     )
 }

@@ -9,7 +9,7 @@
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
-from DataManager import DataManager
+from .DataManager import DataManager
 # from spicy import stats
 import scipy.stats
 from statsmodels.formula.api import ols
@@ -41,7 +41,9 @@ class Multi_variable_analysis():
         # fit linear regression model
         model = sm.OLS(y, x).fit()
         # view model summary
-        print(model.summary())
+
+        print(model.summary().as_html())
+        return model.summary().as_html()
 
     def dummy_multi_linear_regression(self,categorical_variable,response_variable,prediction_variable:list):
         '''
@@ -75,12 +77,12 @@ class Multi_variable_analysis():
 
 
     def main(self):
-        # self.numeric_multi_linear_regression('sepal.length', ['sepal.width','petal.length'])
-        self.dummy_multi_linear_regression('variety', 'sepal.length',['petal.length','Setosa'])
+        return self.numeric_multi_linear_regression('sepal.length', ['sepal.width','petal.length'])
+        # self.dummy_multi_linear_regression('variety', 'sepal.length',['petal.length','Setosa'])
 
 
 
-path = r"C:\Users\Willi\Desktop\aut degree\Second year\R_and_D\Semester 2\Clean_coding\MichelangeloModeller\backend\src\iris.csv"
+# path = r"C:\Users\MarkO\Desktop\MichelangeloModeller\MichelangeloModeller\backend\src\iris.csv"
 
-a = Multi_variable_analysis(path)
-a.main()
+# a = Multi_variable_analysis(path)
+# print(a.main())

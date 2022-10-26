@@ -11,6 +11,7 @@ from src.univariabel_histogram import Univariable_histogram
 from src.excelgen import excelgen
 from src.DataManager import DataManager
 from src.DataCleaning import *
+from src.Multi_linear_regression import Multi_variable_analysis
 
 from src.timeout import timeout
 
@@ -263,6 +264,16 @@ def ObtainPredictions():
         var = request.form['var']
         return jsonify(list(score_features(d.df, var)))
     return "A get method was launched"
+
+@app.route("/MultilinearRegression", methods=['GET', 'POST'])
+def MultilinearRegression():
+    if request.method == 'POST':
+        raw_file = request.files['file']
+        a = Multi_variable_analysis(raw_file)
+
+        return jsonify(str(a.main()))
+    return "A get method was launched"
+
 
 
 if __name__ == '__main__':
