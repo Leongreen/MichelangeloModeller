@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, {useEffect, useState} from "react"
 import generateATable from "../functions/TableCreator";
 import Plotly from 'plotly.js-dist';
 import HorizontalTable from '../components/HorizontalTable';
@@ -6,28 +6,31 @@ import SelectionMenu from '../components/SelectionMenu';
 import VariableSelector from "../components/VariableSelector";
 
 const Model = () => {
-    const [setVar1,var1] = useState('defaultVariable');
+    const [setVar1, var1] = useState('defaultVariable');
+    const [table1, setTable1] = useState(<HorizontalTable title="Classifiers" description="The following table will show basic Classification performance for the selected variable."
+    labels={['Classifier', 'Accuracy']} data={[]} ></HorizontalTable>);
 
     useEffect(() => {
         let fd = new FormData()
-        let file = new File(    [new Blob([window.data])],
-                                sessionStorage.getItem('raw_file_fileName'));
+        let file = new File([new Blob([window.data])],
+            sessionStorage.getItem('raw_file_fileName'));
 
         fd.append('file', file);
         fd.append('var', var1);
 
         // Table for Mean/Mode/Median/SD
-        fetch("/applyModel",{
+        fetch("/applyModel", {
             method: 'POST',
             body: fd
         }).then(
-            res=>res.json()
+            res => res.json()
         ).then(
-            data=> {
+            data => {
                 let d = data[var1];
 
-                setTable1(<HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
-                labels={['Mean','Mode', 'Median', 'SD']} data={var1()} ></HorizontalTable>);
+                setTable1(<HorizontalTable title="Classifiers"
+                                           description="The following table will show basic Classification performance for the selected variable."
+                                           labels={['Classifier', 'Accuracy']} data={d}></HorizontalTable>);
 
             }
         );
@@ -42,6 +45,9 @@ const Model = () => {
                         <div className=" max-h-[400px]">
                             <div className="shadow-lg">
                                 <VariableSelector setState={setVar1} label="Select Variable"></VariableSelector>
+                            </div>
+                            <div className="grid grid-rows-2 gap-2 mt-2">
+                                <div className="w-full text-left text-gray-700 max-h-[200px]" id="table1">{table1}</div>
                             </div>
                         </div>
                     </div>

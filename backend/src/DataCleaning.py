@@ -50,10 +50,5 @@ def FirstEntries(file):
 def ObtainDataLabels(file):
     d = DataManager()
     data = d.ReadFile(file)
-    returnEntries = []
-    data = data.iloc[2: , :]
-    for columns in data:
-        returnEntries.append(columns)
-    
-    return returnEntries
+    return data.columns
 

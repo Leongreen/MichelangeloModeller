@@ -177,15 +177,16 @@ def applyModel():
         output.add_content(model.data_transform(d.df), 'Feature Space')
         output.add_content(d.df.corr(), 'Correlation')
 
+        rows = []
         # loops over dicts and add them to the output
         r_dict = {}
         for x in results:
             if x['summary'] is not None:
+                rows.append([x['Classifier'], x['summary']['accuracy']])
                 r_dict[x['Classifier']] = x['summary']
                 output.add_content(pd.DataFrame(x['summary']), x['Classifier'])
 
-        for x in r_dict.keys():
-            r_dict[x] = pd.DataFrame(r_dict[x]).to_json()
+
 
         # any data passed to 'generateXY()' will be transformed from N x N to 2 X N.
         # used for visualising data
@@ -193,7 +194,7 @@ def applyModel():
 
         output.generate()
 
-        return jsonify(r_dict)
+        return jsonify(rows)
     return "A get method was launched"
 
 
