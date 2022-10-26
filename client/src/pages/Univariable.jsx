@@ -122,7 +122,7 @@ const UniVarA = () => {
                     opacity: 0.6
                 }
                 let layout = {
-                    height: 352,
+
                     radius: 32,
                     margin: {
                         b:32,
@@ -152,7 +152,7 @@ const UniVarA = () => {
             {/* Main grid */}
             <div className="grid-flow-row-dense grid grid-rows-2 grid-cols-2 mx-4 my-4 gap-4 grow ">
                 {/* Variable Selector */}
-                <div className=" max-h-[400px] mb-16">
+                <div className=" max-h-[400px] ">
                     <div className="shadow-lg">
                         <VariableSelector setState={setVar1} label="Select Variable"></VariableSelector>
                     </div>
@@ -185,7 +185,7 @@ const UniVarA = () => {
 
 
                 {/* Graph */}
-                <div className="shadow-md max-h-[400px] border border-gray-400 bg-gray-100 col-span-2">
+                <div className="shadow-md h-full border border-gray-400 bg-gray-100 col-span-2">
                     <div id="graph" className="mx-4 my-4">
 
                     </div>

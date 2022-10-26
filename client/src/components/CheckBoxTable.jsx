@@ -22,10 +22,7 @@ export default function CheckBoxTable(props) {
         ).then(
             data=> {
                 setPrediction(data);
-                console.log(prediction)
             })
-        
-        
         
         fetch("/ObtainColumnNames",{
             method: 'POST',
@@ -47,10 +44,12 @@ export default function CheckBoxTable(props) {
     }
     function generateTR(i){
         let TD = [];
+        if (labels[i] !== window.responseVar) {
+            TD.push(<td scope="col" className="border py-2 px-8 transition hover:bg-gray-200">{labels[i]}</td>);
+            TD.push(<td scope="col" className="border py-2 px-8 transition "><Toggle default={true}></Toggle></td>)
+            TD.push(<td scope="col" className="border py-2 px-8 transition ">{prediction[i]? prediction[i].toFixed(2) : 0}</td>)
+        }
         
-        TD.push(<td scope="col" className="border py-2 px-8 transition hover:bg-gray-200">{labels[i]}</td>);
-        TD.push(<td scope="col" className="border py-2 px-8 transition "><Toggle default={true}></Toggle></td>)
-        TD.push(<td scope="col" className="border py-2 px-8 transition ">{prediction[i]}</td>)
         return TD;
     }
     function generateTD() {

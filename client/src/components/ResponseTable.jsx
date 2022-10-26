@@ -19,7 +19,7 @@ export default function ResponseTable(props) {
             res=>res.json()
         ).then(
             data=> {
-                console.log(data)
+
                 setLabels(data);
             })
     }, [loaded])
@@ -27,7 +27,7 @@ export default function ResponseTable(props) {
     function changeResponse(res){
         window.responseVar = res;
         props.setParentState(res);
-        console.log(window.responseVar)
+
     }
 
     function generateTR(i){

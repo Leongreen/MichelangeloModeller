@@ -240,7 +240,7 @@ def ObtainPredictions():
         d = DataManager()
         d.ReadFile(raw_file)
         var = request.form['var']
-        return jsonify(score_features(d.df, var))
+        return jsonify(list(score_features(d.df, var)))
     return "A get method was launched"
 
 
