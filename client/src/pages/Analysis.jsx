@@ -5,6 +5,29 @@ import {useNavigate, Routes} from "react-router-dom";
 const Analysis = ({children}) => {
     const navigate = useNavigate();
 
+    function downloadResults(){
+        let fd = new FormData()
+        let file = new File([new Blob([window.data])],
+            sessionStorage.getItem('raw_file_fileName'));
+
+        fd.append('file', file);
+        fd.append('response', window.responseVar);
+
+
+        fetch("/downloadResults", {
+            method: 'POST',
+            body: fd
+        }).then(
+            res => res.json()
+        ).then(
+            data => {
+                console.log(data);
+                
+            }
+        );
+        
+    }
+
     return (
             <div className='h-full mt-16 '>
                 <div className='bg-gray-200 rounded-lg shadow-lg mx-auto max-w-[1400px] border border-gray-400'>
@@ -20,7 +43,7 @@ const Analysis = ({children}) => {
                                     <button onClick={() => navigate('/MultiA')} className='transition w-full text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 '>Multilinear Regression</button>
                                     <button onClick={() => navigate('/Randomization')} className='transition w-full text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 '>Randomization Test</button>
                                     <button onClick={() => navigate('/Model')} className='transition w-full text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 border-b'>Model Creation</button>
-                                    <button onClick={() => navigate('/Export')} className='transition w-full text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 border-b'>Export Results</button>
+                                    <button onClick={() => downloadResults()} className='transition w-full text-left text-base font-medium text-slate-600 py-4 px-4 hover:bg-slate-200 hover:text-slate-900 border-b'>Export Results</button>
                                 </div>
                             </div>
                             {/* Analysis Section */}

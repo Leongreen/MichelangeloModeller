@@ -43,13 +43,13 @@ const Model = () => {
             }
         );
         
-    }, [var1]);
+    }, []);
 
     return (
         <div className='h-full'>
            {/* Main grid */}
            <div className="grid-flow-row-dense grid grid-rows-2 grid-cols-2 mx-4 my-4 gap-4 grow ">
-                {/* Variable Selector */}
+                {/* Classifier */}
                 <div className=" max-h-[400px] ">
 
                     <div className="grid grid-rows-2 gap-2 mt-2 max-w-[455]">
@@ -61,7 +61,7 @@ const Model = () => {
                     </div>
                 </div>
                 
-                {/* Full Description */}
+                {/* Classifier Specified */}
                 <div className="max-h-[600px]">
                     <div className="grid grid-rows-2 gap-2 ">
 

@@ -3,6 +3,7 @@ import Toggle from '../components/Toggle';
 
 export default function CheckBoxTable(props) {
     const [labels, setLabels] = useState([]);
+    const [tablesToUse, setTablesToUse] = useState([]);
     const [prediction, setPrediction] = useState([]);
     const [loaded, setLoaded] = useState();
     useEffect(() =>{
@@ -32,28 +33,28 @@ export default function CheckBoxTable(props) {
         ).then(
             data=> {
                 setLabels(data);
-                props.setColumns(data);
+                setTablesToUse(data);
             })
     }, [loaded, props.givenState])
 
-    function turnColumn(index){
-        console.log(labels[index])
-        console.log(props.columns)
-        let localArray = props.columns;
-        if (localArray.indexOf(labels[index]) != -1){
-            localArray.splice(localArray.indexOf(labels[index]), 1);
+    function turnColumn(temp){
+
+        if (tablesToUse.includes(temp)){
+            tablesToUse.splice(tablesToUse.indexOf(temp), 1)
         } else {
-            localArray.push(labels[index]);
+            tablesToUse.push(temp)
         }
-        props.setColumns(localArray);
+
+        
     }
 
     function generateTR(i){
         let TD = [];
         if (labels[i] !== window.responseVar) {
+            let labelName = labels[i];
             TD.push(<td scope="col" className="border py-2 px-8 transition hover:bg-gray-200">{labels[i]}</td>);
             TD.push(<td scope="col" className="border py-2 px-8 transition ">
-                <Toggle onSwitch={() => turnColumn(i)} default={true}></Toggle>
+                <Toggle onSwitch={() => turnColumn(labelName)} default={true}></Toggle>
             </td>)
             TD.push(<td scope="col" className="border py-2 px-8 transition ">{prediction[i]? prediction[i].toFixed(2) : 0}</td>)
         }

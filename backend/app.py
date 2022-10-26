@@ -218,6 +218,41 @@ def applyModel():
         return jsonify(results)
     return "A get method was launched"
 
+@app.route("/downloadResults", methods=['GET', 'POST'])
+def downloadResults():
+    if request.method == 'POST':
+        raw_file = request.files['file']
+        d = DataManager()
+        d.ReadFile(raw_file)
+        model = Model()
+        response = request.form['response']
+
+        output.add_content(d.df, 'Raw Data')
+        output.add_content(model.data_transform(d.df), 'Feature Space')
+        output.add_content(d.df.corr(), 'Correlation')
+
+        if response is None:
+            # NOTE: unsupervised learning is unimplemented
+            model.run_model(d.df)
+        else:
+            results = model.run_model(d.df, response)
+
+        for x in results['output']:
+            output.add_content(pd.DataFrame(x['summary']),x['Classifier'])
+        del results['output']
+
+        # return form is a list of following dicts
+        # results['summarytable'] : array for table on top left
+        # results['classifiers'] : list of classifiers
+        # results['graph'] : 2d array for graph
+        # result['graphlabel'] : label/color for graph
+
+        # result[classifier_name] : table showing stats about that classifier
+
+        output.generate()
+        return jsonify(results)
+    return "A get method was launched"
+
 @app.route("/ObtainPredictions", methods=['GET', 'POST'])
 def ObtainPredictions():
     if request.method == 'POST':
