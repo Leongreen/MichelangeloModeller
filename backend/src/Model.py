@@ -113,7 +113,7 @@ class Model:
         models = []
 
         for x in classifiers:
-            summaryTable.append(list([x['Classifier'],x['summary']['accuracy']]))
+            summaryTable.append(list([x['Classifier'],round(x['summary']['accuracy'],2)]))
             models.append(x['Classifier'])
             c_report = []
             for i in x['summary'].keys():
