@@ -103,14 +103,10 @@ class Model:
         classifiers = []
 
         # try each classifier and setting a time limit
-        with timeout(seconds=self.TIMEOUT):
-            classifiers.append(self.run_sgd(x_train, y_train, x_test, y_test))
-        with timeout(seconds=self.TIMEOUT):
-            classifiers.append(self.run_svc(x_train, y_train, x_test, y_test))
-        with timeout(seconds=self.TIMEOUT):
-            classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
-        with timeout(seconds=self.TIMEOUT):
-            classifiers.append(self.run_gaussian(x_train, y_train, x_test, y_test))
+        classifiers.append(self.run_sgd(x_train, y_train, x_test, y_test))
+        classifiers.append(self.run_svc(x_train, y_train, x_test, y_test))
+        classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
+        classifiers.append(self.run_gaussian(x_train, y_train, x_test, y_test))
         # dict['Classifier'] : name of classifier. The user should see this
         # dict['ConfusionMatrix'] : ndarray showing TP, TN, FN, FP. Useful for user but not necessary
         # dict['summary'] : dict containing acc, pre, recall, f1 ect. The user should see this
