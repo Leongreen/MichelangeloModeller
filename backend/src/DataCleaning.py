@@ -72,24 +72,33 @@ def NormalizeData(data):
     return (data - np.min(data)) / (np.max(data) - np.min(data))
 
 def score_features(data, label):
+    data = data.dropna()
+    process_limit = 20000
+
+    if (len(data) * len(data.columns)) > process_limit:
+        lim = round(process_limit/len(data.columns))
+        data = data.iloc[:lim,:]
+
+
     labels = data[label].to_numpy()
     predictors = data.drop([label],axis=1)
-    nums = data.select_dtypes(include=['float64', 'int64'])
+    nums = predictors.select_dtypes(include=['float64', 'int64'])
 
     for x in nums:
         nums[x] = (nums[x]-nums[x].mean())/nums[x].std()
+
 
     model = LogisticRegression()
     model.fit(nums,labels)
     output = []
     pd_count = 0
     for i in data.columns:
-        if i in predictors.columns:
-            output.append(abs(model.coef_[0][pd_count]))
+        if i in nums.columns:
+            output.append(round(abs(model.coef_[0][pd_count]),2))
             pd_count += 1
         else:
             output.append(0)
     output = NormalizeData(output)
     for x in range(len(output)):
         output[x] *= 100
-    return list(output)
+    return output
