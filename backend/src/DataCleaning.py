@@ -50,5 +50,5 @@ def FirstEntries(file):
 def ObtainDataLabels(file):
     d = DataManager()
     data = d.ReadFile(file)
-    return data.columns
+    return list(data.columns)
 
