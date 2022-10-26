@@ -94,11 +94,11 @@ def score_features(data, label):
     pd_count = 0
     for i in data.columns:
         if i in nums.columns:
-            output.append(round(abs(model.coef_[0][pd_count]),2))
+            output.append(abs(model.coef_[0][pd_count]))
             pd_count += 1
         else:
             output.append(0)
     output = NormalizeData(output)
     for x in range(len(output)):
-        output[x] *= 100
-    return output
+        output[x] = round((100 * output[x]),2)
+    return list(output)
