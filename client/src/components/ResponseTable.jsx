@@ -1,17 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import Toggle from '../components/Toggle';
 
-export default function ResponceTable(props) {
+export default function ResponseTable(props) {
     const [labels, setLabels] = useState([]);
     const [prediction, setPrediction] = useState([]);
     const [loaded, setLoaded] = useState();
+
     useEffect(() =>{
         let fd = new FormData()
         let file = new File(    [new Blob([window.data])], 
                                             sessionStorage.getItem('raw_file_fileName'))
         
         fd.append('file', file)
-        
         fetch("/ObtainResponseColumnNames",{
             method: 'POST',
             body: fd
@@ -24,18 +24,18 @@ export default function ResponceTable(props) {
             })
     }, [loaded])
 
-    function generateTH() {
-        let TR = [];
-        for (let i = 0; i < labels.length; i++) {
-            TR.push(<th scope="col" className="border py-3 px-8">{labels[i]}</th>);
-        }
-        return TR;
+    function changeResponse(res){
+        window.responseVar = res;
+        props.setParentState(res);
+        console.log(window.responseVar)
     }
+
     function generateTR(i){
         let TD = [];
         
         TD.push(<td scope="col" className="border py-2 px-8 transition hover:bg-gray-200">{labels[i]}</td>);
-        TD.push(<td scope="col" className="border py-2 px-8 transition "><Toggle default={false}></Toggle></td>)
+        TD.push(<td scope="col" className="border py-2 px-8 transition"><input className='mx-auto' type="radio" name="response" value={labels[i]} 
+                                onChange={() => changeResponse(labels[i])} /></td>)
         return TD;
     }
     function generateTD() {
@@ -47,7 +47,6 @@ export default function ResponceTable(props) {
         }
         return TR;
     }
-
 
     return (
         <div className="overflow-hidden  shadow-md sm:rounded-lg border border-gray-400">
@@ -63,6 +62,7 @@ export default function ResponceTable(props) {
                 </tr>
             </thead>
             <tbody className='bg-white min-w-full'>
+
                 {generateTD()}
             </tbody>
             </table>

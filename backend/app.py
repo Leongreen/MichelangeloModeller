@@ -233,6 +233,16 @@ def applyModel():
         return jsonify(rows)
     return "A get method was launched"
 
+@app.route("/ObtainPredictions", methods=['GET', 'POST'])
+def ObtainPredictions():
+    if request.method == 'POST':
+        raw_file = request.files['file']
+        d = DataManager()
+        d.ReadFile(raw_file)
+        var = request.form['var']
+        return jsonify(score_features(d.df, var))
+    return "A get method was launched"
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host='0.0.0.0')

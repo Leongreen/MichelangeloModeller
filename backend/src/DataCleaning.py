@@ -92,4 +92,4 @@ def score_features(data, label):
     output = NormalizeData(output)
     for x in range(len(output)):
         output[x] *= 100
-    return output
+    return list(output)

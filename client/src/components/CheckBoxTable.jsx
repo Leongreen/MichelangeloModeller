@@ -6,11 +6,26 @@ export default function CheckBoxTable(props) {
     const [prediction, setPrediction] = useState([]);
     const [loaded, setLoaded] = useState();
     useEffect(() =>{
+
         let fd = new FormData()
         let file = new File(    [new Blob([window.data])], 
                                             sessionStorage.getItem('raw_file_fileName'))
         
         fd.append('file', file)
+        fd.append('var', window.responseVar)
+
+        fetch("/ObtainPredictions",{
+            method: 'POST',
+            body: fd
+        }).then(
+            res=>res.json()
+        ).then(
+            data=> {
+                setPrediction(data);
+                console.log(prediction)
+            })
+        
+        
         
         fetch("/ObtainColumnNames",{
             method: 'POST',
@@ -21,7 +36,7 @@ export default function CheckBoxTable(props) {
             data=> {
                 setLabels(data);
             })
-    }, [loaded])
+    }, [loaded, props.givenState])
 
     function generateTH() {
         let TR = [];
