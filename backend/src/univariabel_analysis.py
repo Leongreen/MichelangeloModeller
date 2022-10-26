@@ -1,4 +1,4 @@
-from .DataManager import DataManager
+from DataManager import DataManager
 import pandas as pd
 import numpy
 '''test2'''
@@ -94,6 +94,38 @@ class Univariable():
                 discribtion_dict[variable_selection][parameter] = parameters[parameter][variable_selection]
         return discribtion_dict
 
+    def new_full_discribtion(self):
+        '''
+        This return a dict to serve the GUI side, here is the format:
+        {label: [sepal.length, sepal.width],  mean: [values], mode: [values], sd: [values] etc}
+        In general form {lable:[all variable names], means:[], mdoe:[], sd:[]}
+        '''
+        df = self.data
+        numeric_data = df.select_dtypes(include=['float64', 'int64'])
+        a_dict = {'lable':[],"mean":[], "mode":[], 'Standard_deviation':[], "Median":[]}
+        for variable_names in numeric_data:
+            print(variable_names)
+            a_dict['lable'].append(variable_names)
+        for variable_name in a_dict['lable']:
+            mean = self.Full_discribtion(variable_name)[variable_name]['mean']
+            mode = self.Full_discribtion(variable_name)[variable_name]['mode']
+            Standard_deviation = self.Full_discribtion(variable_name)[variable_name]['Standard_deviation']
+            Median = self.Full_discribtion(variable_name)[variable_name]['Median']
+
+            a_dict["mean"].append(round(mean,2))
+            a_dict["mode"].append(round(mode,2))
+            a_dict["Standard_deviation"].append(round(Standard_deviation,2))
+            a_dict["Median"].append(round(Median,2))
+
+        print(a_dict)
+
+
+        # for j in self.unvariable_analysis():
+        #     print(j,self.unvariable_analysis()[j])
+
+        # print(a_dict)
+        return None
+
     def singular_quantile(self, selected_variabel):
         df = self.data
         numeric_data= df.select_dtypes(include=['float64', 'int64'])
@@ -106,15 +138,53 @@ class Univariable():
         return quantile.tolist()
 
     def all_quantile(self):
-        df = self.drop_empty_row
+        df = self.data
         numeric_data = df.select_dtypes(include=['float64', 'int64'])
         full_descrbtion = {}
         for variable in numeric_data:
-            full_descrbtion[variable] = numpy.quantile(numeric_data[variable], [0,0.25,0.5,0.75,1])
+            full_descrbtion[variable] = list(numpy.quantile(numeric_data[variable], [0,0.25,0.5,0.75,1]))
         # for head in self.data
         
         return full_descrbtion
 
-    def main(self):
-        self.datainjesting()
-        self.unvariable_analysis()
+    def new_all_quantile(self):
+        '''
+        This return a dict to serve the GUI side, here is the format:
+        a_dict = {'label': [], "0%": [4.3,2.0,1.0,0.1], "25%": [], '50%': [], "75%": [],"75%": []}
+        In general form {lable:[all variable names], "0%":[], "25%":[], '50%':[], "75%": [],"75%": []}
+        '''
+        df = self.data
+        numeric_data = df.select_dtypes(include=['float64', 'int64'])
+        a_dict = {'label': [], "0%": [], "25%": [], '50%': [], "75%": [],"100%": []}
+        for variable_names in numeric_data:
+            # print(variable_names)
+            a_dict['label'].append(variable_names)
+        all_quantile_dict = self.all_quantile()
+        for index in range(len(a_dict["label"])):
+            print(index)
+            for variable_names in a_dict["label"]:
+                a_dict["0%"].append(all_quantile_dict[variable_names][index])
+                a_dict["25%"].append(all_quantile_dict[variable_names][index])
+                a_dict["50%"].append(all_quantile_dict[variable_names][index])
+                a_dict["75%"].append(all_quantile_dict[variable_names][index])
+                a_dict["100%"].append(all_quantile_dict[variable_names][index])
+
+        print(a_dict)
+        print('-------------------------------------------------')
+        print(all_quantile_dict)
+
+
+
+
+
+    # def main(self):
+    #     self.datainjesting()
+    #     self.unvariable_analysis()
+
+path = r"C:\Users\Willi\Desktop\aut degree\Second year\R_and_D\Semester 2\Clean_coding\MichelangeloModeller\backend\src\iris.csv"
+a = Univariable(path)
+a.datainjesting()
+# print(a.new_full_discribtion())
+# print(a.Full_discribtion("petal.width"))
+# print(a.all_quantile())
+print(a.new_all_quantile())

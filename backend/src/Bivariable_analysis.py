@@ -4,7 +4,7 @@
 # @FileName: Bivariable_analysis.py
 # @Software: PyCharm
 # @Blog    ：https://bornforthis.cn/
-from .DataManager import DataManager
+from DataManager import DataManager
 import pandas as pd
 from scipy import stats
 import plotly.express as px
@@ -110,3 +110,8 @@ class Bivariable_analysis():
         self.datainjesting()
         print(self.singular_linear_regression('sepal.length', 'sepal.length'))
         print(self.ploting('sepal.length', 'sepal.length'))
+
+path = r"C:\Users\Willi\Desktop\aut degree\Second year\R_and_D\Semester 2\Clean_coding\MichelangeloModeller\backend\src\iris.csv"
+a = Bivariable_analysis(path)
+a.datainjesting()
+print(a.full_correlation_analysis())
