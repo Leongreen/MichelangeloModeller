@@ -18,6 +18,27 @@ class Bivariable_analysis():
         """
         self.path = path
 
+    def convert_format(self):
+        corr = self.data.corr()
+        labels = list(corr.columns)
+        output = {}
+        for i in range(corr.shape[0] + 1):
+            row = []
+            for j in range(corr.shape[0] + 1):
+                if(i == 0):
+                    if(j == 0):
+                        row.append(' ')
+                    else:
+                        row.append(labels[j-1])
+                else:
+                    if (j==0):
+                        row.append(labels[i-1])
+                    else:
+                        row.append(corr.iloc[i-1,j-1])
+            output[i] = row
+        print(corr)
+        return output
+
     def datainjesting(self):
         """
         this is to read the data

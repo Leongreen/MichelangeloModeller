@@ -9,8 +9,8 @@ export default function CheckBoxTable(props) {
     useEffect(() =>{
 
         let fd = new FormData()
-        let file = new File(    [new Blob([window.data])], 
-                                            sessionStorage.getItem('raw_file_fileName'))
+        let file = new File(    [new Blob([window.data_raw])], 
+                                sessionStorage.getItem('raw_file_fileName'))
         
         fd.append('file', file)
         fd.append('var', window.responseVar)
@@ -45,6 +45,25 @@ export default function CheckBoxTable(props) {
             tablesToUse.push(temp)
         }
 
+        console.log(tablesToUse)
+
+        let fd = new FormData()
+        let file = new File(    [new Blob([window.data_raw])], 
+                                sessionStorage.getItem('raw_file_fileName'))
+        
+        fd.append('file', file)
+        fd.append('columnList', JSON.stringify(tablesToUse))
+
+        fetch("/DropColumns",{
+            method: 'POST',
+            body: fd
+        }).then(
+            res=>res.json()
+        ).then(
+            data=> {
+                window.data = JSON.stringify(data)
+            })
+        
         
     }
 

@@ -8,7 +8,7 @@ export default function ResponseTable(props) {
 
     useEffect(() =>{
         let fd = new FormData()
-        let file = new File(    [new Blob([window.data])], 
+        let file = new File(    [new Blob([window.data_raw])], 
                                             sessionStorage.getItem('raw_file_fileName'))
         
         fd.append('file', file)

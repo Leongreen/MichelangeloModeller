@@ -80,6 +80,64 @@ class Univariable():
 
         return data_dict
 
+    def full_unvariable_analysis(self):
+        """
+        1. Analysing the mode，mean，median and Standard deviation for each column.
+        2. Return a dictionary that contains the  mode，mean，median and Standard deviation for each column.
+           sample： {column1:{mean:value,mode:value,median:value}, column 2: {mean:value,mode:value,median:value}}
+        :return:
+        """
+        """
+        The following first drop empty rows of the data,
+        then it calculates the mean, mode, median, and standard deviation
+        for each variable (column).
+        """
+        self.drop_empty_row = self.data.dropna(axis=0)
+        means = self.drop_empty_row.mean(axis=0, numeric_only=True)
+        modes = self.drop_empty_row.mode(axis=0, numeric_only=True)
+        medians = self.drop_empty_row.median(axis=0, numeric_only=True)
+        SD = self.drop_empty_row.std(axis=0, numeric_only=True).dropna(axis=0)
+        # print("-----------------------------------------")
+        """
+        The following is to create a mode dictionary corresponding to all variables
+        as there are some weired issue by using the modes_dict = dict(modes)
+        to create a dictionary
+        """
+        modes_dict = {}
+        mode_num_list = []
+        mode_var_list = []
+        for i in modes:
+            mode_var_list.append(i)
+        for j in modes.values[0]:
+            mode_num_list.append(j)
+        for k in range(0, len(mode_num_list)):
+            modes_dict[mode_var_list[k]] = mode_num_list[k]
+        """
+        The following creates a dictionary for of means corresponding 
+        to their variables.
+        """
+        means_dict = dict(means)
+        ""
+        """
+        The following creates a dictionary for of medians corresponding 
+        to their variables.
+        """
+        Median_dict = dict(medians)
+        # print(medians_dict_test)
+        # print("SD_dict")
+        # print("--------------------SD_dict")
+        """
+        The following creates a dictionary for of medians corresponding 
+        to their variables.
+        """
+        SD_dict = dict(SD)
+        # print(SD_dict)
+        """
+        This is what we want. 
+        """
+        data_dict = {"labels": list(means_dict),"mean": list(means_dict.values()), "mode": list(modes_dict.values()), "Standard_deviation": list(SD_dict.values()), "Median": list(Median_dict.values())}
+
+        return data_dict
 
     def Full_discribtion(self, variable_selection):
         """
