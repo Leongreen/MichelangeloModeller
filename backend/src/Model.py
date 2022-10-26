@@ -113,21 +113,21 @@ class Model:
         models = []
 
         for x in classifiers:
-            summaryTable.append([x['Classifier'],x['summary']['accuracy']])
+            summaryTable.append(list([x['Classifier'],x['summary']['accuracy']]))
             models.append(x['Classifier'])
             c_report = []
             for i in x['summary'].keys():
                 if type(x['summary'][i]) != float:
                     n = list(x['summary'][i].values())
-                    c_report.append([round(item, 2) for item in n])
+                    c_report.append(list([round(item, 2) for item in n]))
 
-            result[x['Classifier']] = c_report
+            result[x['Classifier']] = list(c_report)
 
 
-        result['classifiers'] = models
-        result['graph'] = self.generateXY(data)
-        result['graphlabel'] = labels
-        result['summarytable'] = summaryTable
+        result['classifiers'] = list(models)
+        result['graph'] = list(self.generateXY(data))
+        result['graphlabel'] = list(labels)
+        result['summarytable'] = list(summaryTable)
 
         return result
 
