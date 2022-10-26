@@ -156,22 +156,29 @@ class Univariable():
         df = self.data
         numeric_data = df.select_dtypes(include=['float64', 'int64'])
         a_dict = {'label': [], "0%": [], "25%": [], '50%': [], "75%": [],"100%": []}
+        all_quantile_dict = self.all_quantile()
         for variable_names in numeric_data:
             # print(variable_names)
             a_dict['label'].append(variable_names)
         all_quantile_dict = self.all_quantile()
         for index in range(len(a_dict["label"])):
             print(index)
-            for variable_names in a_dict["label"]:
-                a_dict["0%"].append(all_quantile_dict[variable_names][index])
-                a_dict["25%"].append(all_quantile_dict[variable_names][index])
-                a_dict["50%"].append(all_quantile_dict[variable_names][index])
-                a_dict["75%"].append(all_quantile_dict[variable_names][index])
-                a_dict["100%"].append(all_quantile_dict[variable_names][index])
+            for variable_name in a_dict["label"]:
+                a_dict["0%"].append(all_quantile_dict[variable_name][index])
+                a_dict["25%"].append(all_quantile_dict[variable_name][index])
+                a_dict["50%"].append(all_quantile_dict[variable_name][index])
+                a_dict["75%"].append(all_quantile_dict[variable_name][index])
+                a_dict["100%"].append(all_quantile_dict[variable_name][index])
+                continue
+        a_dict["0%"] = a_dict["0%"][0:len(a_dict['label'])]
+        a_dict["25%"] = a_dict["25%"][0:len(a_dict['label'])]
+        a_dict["50%"] = a_dict["50%"][0:len(a_dict['label'])]
+        a_dict["75%"] = a_dict["50%"][0:len(a_dict['label'])]
+        a_dict["100%"] = a_dict["100%"][0:len(a_dict['label'])]
 
-        print(a_dict)
-        print('-------------------------------------------------')
-        print(all_quantile_dict)
+        return a_dict
+
+
 
 
 
