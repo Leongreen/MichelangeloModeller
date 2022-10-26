@@ -207,7 +207,7 @@ def applyModel():
 
         output.generate()
 
-        return jsonify(rows)
+        return jsonify(results)
     return "A get method was launched"
 
 @app.route("/ObtainPredictions", methods=['GET', 'POST'])
