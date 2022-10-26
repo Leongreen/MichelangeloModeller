@@ -192,11 +192,20 @@ def applyModel():
         model = Model()
         response = request.form['response']
 
+        output.add_content(d.df, 'Raw Data')
+        output.add_content(model.data_transform(d.df), 'Feature Space')
+        output.add_content(d.df.corr(), 'Correlation')
+
         if response is None:
             # NOTE: unsupervised learning is unimplemented
             model.run_model(d.df)
         else:
             results = model.run_model(d.df, response)
+
+        for x in results['output']:
+            output.add_content(pd.DataFrame(x['summary']),x['Classifier'])
+        del results['output']
+
         # return form is a list of following dicts
         # results['summarytable'] : array for table on top left
         # results['classifiers'] : list of classifiers

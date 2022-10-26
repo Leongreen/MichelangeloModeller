@@ -120,7 +120,7 @@ class Model:
                 if type(x['summary'][i]) != float:
 
                     n = x['summary'][i]
-                    c_report.append(dict(round(item, 2) for item in n.values()))
+                    c_report.append(n)
 
                     #n = list(x['summary'][i].values())
                     #c_report.append(list([round(item, 2) for item in n]))
@@ -132,6 +132,7 @@ class Model:
         result['graph'] = list(self.generateXY(data))
         result['graphlabel'] = list(labels)
         result['summarytable'] = list(summaryTable)
+        result['output'] = classifiers
 
         return result
 
