@@ -197,30 +197,14 @@ def applyModel():
             model.run_model(d.df)
         else:
             results = model.run_model(d.df, response)
-        # return form is a list of following dicts for each algorithm:
+        # return form is a list of following dicts
+        # results['summarytable'] : array for table on top left
+        # results['classifiers'] : list of classifiers
+        # results['graph'] : 2d array for graph
+        # result['graphlabel'] : label/color for graph
 
-        # dict['Classifier'] : name of classifier. The user should see this
-        # dict['ConfusionMatrix'] : ndarray showing TP, TN, FN, FP. Useful for user but not necessary
-        # dict['summary'] : dict containing acc, pre, recall, f1 ect. The user should see this
+        # result[classifier_name] : table showing stats about that classifier
 
-        # NOTE it might be easier to convert dict['summary'] to a dataframe then to json
-        # results[x]['summary'] = pd.Dataframe(results[x]['summary'])
-
-        # Classifiers should be ranked by dict['summary']['accuracy']
-
-        # add excel output sheets
-        output.add_content(d.df, 'Raw Data')
-        output.add_content(model.data_transform(d.df), 'Feature Space')
-        output.add_content(d.df.corr(), 'Correlation')
-
-        rows = []
-        # loops over dicts and add them to the output
-        r_dict = {}
-        for x in results:
-            if x['summary'] is not None:
-                rows.append([x['Classifier'], x['summary']['accuracy']])
-                r_dict[x['Classifier']] = x['summary']
-                output.add_content(pd.DataFrame(x['summary']), x['Classifier'])
 
 
 
