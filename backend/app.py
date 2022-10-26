@@ -274,6 +274,18 @@ def MultilinearRegression():
         return jsonify(str(a.main()))
     return "A get method was launched"
 
+@app.route("/CorrelationMatrix", methods=['GET', 'POST'])
+def CorrelationMatrix():
+    if request.method == 'POST':
+        # An actual file that can be read with data manager.
+        raw_file = request.files['file']
+
+
+        a = Bivariable_analysis(raw_file)
+        a.datainjesting()
+        
+        return jsonify(a.convert_format())
+    return "A get method was launched"
 
 
 if __name__ == '__main__':

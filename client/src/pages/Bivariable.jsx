@@ -12,9 +12,23 @@ const BivA = () => {
     const [table1, setTable1] = useState(<HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
     labels={['Slope','Intercept', 'R_sqr', 'P_value']} data={[]} ></HorizontalTable>)
 
+    let fd = new FormData()
+    let file = new File(    [new Blob([window.data])], 
+                            sessionStorage.getItem('raw_file_fileName'));
+    
+    fd.append('file', file);
 
-    useEffect((lab, tableData) => {
+    useEffect(() => {
+        fetch("/CorrelationMatrix",{
+            method: 'POST',
+            body: fd
+        }).then(
+            res=>res.json()
+        ).then(
+            data=> {
+                console.log(data)
 
+            })
     });
 
 
