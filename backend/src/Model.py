@@ -19,6 +19,8 @@ class Model:
         # set parameters
         self.TIMEOUT = 5
         self.TEST_SPLIT = 0.25
+        self.bestmodel = None
+        self.bestperformance = 0
 
 
     def data_transform(self, data):
@@ -111,6 +113,7 @@ class Model:
             classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
         with timeout(seconds=self.TIMEOUT):
             classifiers.append(self.run_gaussian(x_train, y_train, x_test, y_test))
+
         return classifiers
 
     def run_sgd(self, x, y, X, Y):
@@ -124,7 +127,11 @@ class Model:
         results = {'Classifier': 'SGD'}
         results['summary'] = metrics.classification_report(Y, p, output_dict=True)
         results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
-        print(f"SGD Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
+        a = metrics.accuracy_score(Y, p)
+        print(f"SGD Complete: Accuracy:{a}")
+        if a > self.bestperformance:
+            self.bestperformance = a
+            self.bestmodel = sgd
         return results
 
     def run_svc(self, x, y, X, Y):
@@ -138,7 +145,11 @@ class Model:
         results = {'Classifier': 'LinearSVC'}
         results['summary'] = metrics.classification_report(Y, p, output_dict=True)
         results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
-        print(f"SVC Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
+        a = metrics.accuracy_score(Y, p)
+        print(f"SVC Complete: Accuracy:{a}")
+        if a > self.bestperformance:
+            self.bestperformance = a
+            self.bestmodel = svc
         return results
 
     def run_mlp(self, x, y, X, Y):
@@ -152,7 +163,11 @@ class Model:
         results = {'Classifier': 'MLP Neural Network'}
         results['summary'] = metrics.classification_report(Y, p, output_dict=True)
         results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
-        print(f"MLP Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
+        a = metrics.accuracy_score(Y, p)
+        print(f"MLP Complete: Accuracy:{a}")
+        if a > self.bestperformance:
+            self.bestperformance = a
+            self.bestmodel = mlp
         return results
 
     def run_gaussian(self, x, y, X, Y):
@@ -162,16 +177,20 @@ class Model:
             return results
         # create the classifier object and kernel
         kernel = 1.0 * RBF(1.0)
-        mlp = GaussianProcessClassifier(kernel=kernel)
+        gau = GaussianProcessClassifier(kernel=kernel)
         # fit classifier to training data (x,y)
-        mlp.fit(x, y)
+        gau.fit(x, y)
         # make a prediction on the test data
-        p = mlp.predict(X)
+        p = gau.predict(X)
         # generate and return results
 
         results['summary'] = metrics.classification_report(Y, p, output_dict=True)
         results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
-        print(f"Gaussian Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
+        a = metrics.accuracy_score(Y, p)
+        print(f"Guassian Complete: Accuracy:{a}")
+        if a > self.bestperformance:
+            self.bestperformance = a
+            self.bestmodel = gau
         return results
 
     # function to convert high dimensional into 2 principle components for visualization
