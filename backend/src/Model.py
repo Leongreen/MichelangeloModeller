@@ -111,7 +111,25 @@ class Model:
             classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
         with timeout(seconds=self.TIMEOUT):
             classifiers.append(self.run_gaussian(x_train, y_train, x_test, y_test))
-        return classifiers
+        # dict['Classifier'] : name of classifier. The user should see this
+        # dict['ConfusionMatrix'] : ndarray showing TP, TN, FN, FP. Useful for user but not necessary
+        # dict['summary'] : dict containing acc, pre, recall, f1 ect. The user should see this
+        result = {}
+        summaryTable = []
+        models = []
+        for x in classifiers:
+            summaryTable.append([x['Classifier'],x['summary']['accuracy']])
+            models.append(x['Classifier'])
+            c_report = []
+            for i in x['summary'].keys():
+                c_report.append(list(x['summary'][i].values()))
+            result[x['Classifier']] = c_report
+        result['classifiers'] = models
+        result['graph'] = self.generateXY(data)
+        result['graphlabel'] = labels
+        result['summarytable'] = summaryTable
+
+        return result
 
     def run_sgd(self, x, y, X, Y):
         # create the classifier object
@@ -177,6 +195,7 @@ class Model:
     # function to convert high dimensional into 2 principle components for visualization
     def generateXY(self, data):
         # set limit on the amount of data to process
+        data = data.dropna()
         process_limit = 1000
         # calculate the amount of values in the dataframe
         value_count = len(data) * len(data.columns)
