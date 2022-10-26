@@ -7,16 +7,18 @@ export default class Toggle extends React.Component {
         super(props);
         this.setS = this.props.setState;
         this.state = {enabled: props.default}
+        this.onSwitch = this.props.onSwitch;
     }
     
     switchEnabled(){
         if (this.state.enabled){
             this.setState({enabled: false});
-            this.setS(false)
+
         } else{
             this.setState({enabled: true});
-            this.setS(true)
+
         }
+        this.onSwitch()
     }
     render (){
         return (

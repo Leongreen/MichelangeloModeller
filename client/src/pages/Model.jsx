@@ -16,7 +16,7 @@ const Model = () => {
             sessionStorage.getItem('raw_file_fileName'));
 
         fd.append('file', file);
-        fd.append('var', var1);
+        fd.append('response', window.responseVar);
 
         // Table for Mean/Mode/Median/SD
         fetch("/applyModel", {
