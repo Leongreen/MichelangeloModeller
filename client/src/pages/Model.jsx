@@ -26,6 +26,9 @@ const Model = () => {
             data=> {
                 let d = data[var1];
 
+                setTable1(<HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
+                labels={['Mean','Mode', 'Median', 'SD']} data={var1()} ></HorizontalTable>);
+
             }
         );
 
