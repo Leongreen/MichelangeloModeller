@@ -2,17 +2,26 @@ import React, { useEffect, useState } from "react"
 import generateATable from "../functions/TableCreator";
 import Plotly from 'plotly.js-dist';
 import HorizontalTable from '../components/HorizontalTable';
+import LoadingSpinner from '../components/LoadingSpinner';
 import SelectionMenu from '../components/SelectionMenu';
 import VariableSelector from "../components/VariableSelector";
 
 
-const UniVarA = () => {    
-    const [var1, setVar1] = useState('defaultVariable');
+const UniVarA = () => {
+    const [var1, setVar1] = useState('DefaultVariable');
+    const [tablesLoaded, setTablesLoaded] = useState(false);
     const [table1, setTable1] = useState(<HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
-    labels={['Mean','Mode', 'Median', 'SD']} data={[]} ></HorizontalTable>);
+    labels={['Mean','Mode', 'Median', 'SD']} data={[]} ></HorizontalTable>)
     const [table2, setTable2] = useState(<HorizontalTable title="Quantile Table" description="The following table will show several common quantiles for the selected variable."
-    labels={['25%','50%', '75%', '100%']} data={[]} ></HorizontalTable>);
-    useEffect(() => {
+    labels={['0%','25%','50%', '75%', '100%']} data={[]} ></HorizontalTable>);
+
+    const [table3, setTable3] = useState(<HorizontalTable title="Full Univariable Analysis Table" description="The following table will show full univariable description for the dataset."
+    labels={['Mean','Mode', 'Median', 'SD']} data={[]} ></HorizontalTable>)
+    const [table4, setTable4] = useState(<HorizontalTable title="Full Quantile Table" description="The following table will show full quantile description for the dataset."
+    labels={['0','25%','50%', '75%', '100%']} data={[]} ></HorizontalTable>);
+
+    function updateTables(){
+        setTablesLoaded(false);
         let fd = new FormData()
         let file = new File(    [new Blob([window.data])], 
                                 sessionStorage.getItem('raw_file_fileName'));
@@ -35,14 +44,45 @@ const UniVarA = () => {
                                     d.mode.toFixed(2),
                                     d.Median.toFixed(2),
                                     d.Standard_deviation.toFixed(2)]]
-                console.log(var1)
-                setTable1(<HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
-                labels={['Mean','Mode', 'Median', 'SD']} data={tableData} ></HorizontalTable>);
+                                    
+                
+                setTable1(  <HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
+                            labels={['Mean','Mode', 'Median', 'SD']} data={tableData} ></HorizontalTable>);
 
+                
             }
         );
         
+        // Table for QUANTILES
+        fetch("/univariableAnalysisTABLEq",{
+            method: 'POST',
+            body: fd
+        }).then(
+            res=>res.json()
+        ).then(
+            data=> {
+                
+                let d = data[var1];
+                // MODE/MEAN/MEDIAN/SD TABLE
+                let tableData = [   [data[0].toFixed(2),
+                                    data[1].toFixed(2),
+                                    data[2].toFixed(2),
+                                    data[3].toFixed(2),
+                                    data[4].toFixed(2)]]
+                                    
+                setTable2(  <HorizontalTable title="Quantile Table" description="The following table will show several common quantiles for the selected variable."
+                            labels={['0','25%','50%', '75%', '100%']} data={tableData} ></HorizontalTable>);
+                setTablesLoaded(true);
+            }
+        );
+    }
+
+    useEffect(() => {
+        
+        updateTables()
+        
     }, [var1]);
+    
 
 
     // Updating the tables and graphs on the page
@@ -162,26 +202,35 @@ const UniVarA = () => {
 
     return (
         
-        <div>{console.log("Rendered")}
+        <div>
             {/* Main grid */}
-            <div className="grid-flow-row-dense grid grid-rows-2 grid-cols-2 mx-4 my-4 gap-4 ">
+            <div className="grid-flow-row-dense grid grid-rows-2 grid-cols-2 mx-4 my-4 gap-4 grow ">
                 {/* Variable Selector */}
-                <div className=" max-h-[400px]">
+                <div className=" max-h-[400px] mb-16">
                     <div className="shadow-lg">
                         <VariableSelector setState={setVar1} label="Select Variable"></VariableSelector>
                     </div>
                     <div className="grid grid-rows-2 gap-2 mt-2">
-                        <div className="w-full text-left text-gray-700 max-h-[200px]" id="table1">{table1}</div>
-                        <div className="w-full mx-auto max-h-[200px]" id="table2">{table2}</div>
+                        <div className="w-full mx-auto" id="table1">
+                            {tablesLoaded? table1 : <HorizontalTable title="Univariable Analysis Table" description="The following table will show basic univariable analysis for the selected variable."
+                            labels={['Mean','Mode', 'Median', 'SD']} data={[]} ></HorizontalTable>}
+                        </div>
+                        <div className="w-full mx-auto " id="table2">
+                            {tablesLoaded? table2 : <HorizontalTable title="Quantile Table" description="The following table will show several common quantiles for the selected variable."
+                            labels={['0%','25%','50%', '75%', '100%']} data={[]} ></HorizontalTable>}
+                        </div>
                     </div>
                 </div>
                 
                 {/* Full Description */}
-                <div className="shadow-md bg-gray-100 rounded-lg border border-gray-400 px-4 py-4 max-h-[400px]">
-                    <div className="grid grid-rows-2">
-                        <div className="w-full mx-auto text-gray-700 text-left pt-2" id="table3">
+                <div className="max-h-[600px]">
+                    <div className="grid grid-rows-2 gap-2 ">
+                        <div className="w-full mx-auto" id="table3">
+                            {tablesLoaded? table3 : <LoadingSpinner/>}
                         </div>
-                        <div className="w-full mx-auto " id="table4"></div>
+                        <div className="w-full mx-auto " id="table4">
+                            {tablesLoaded? table4 : <LoadingSpinner/>}
+                        </div>
                     </div>
                 </div>
                 
