@@ -1,86 +1,27 @@
 import pandas as pd
 from keras.layers import TextVectorization
-from sklearn.linear_model import SGDClassifier
-from sklearn.svm import LinearSVC
+from sklearn import metrics
 from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.gaussian_process.kernels import RBF
-from sklearn.impute import SimpleImputer
+from sklearn.linear_model import SGDClassifier
 from sklearn.manifold import TSNE
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.compose import ColumnTransformer
 from sklearn.svm import LinearSVC
-from sklearn import metrics
-import numpy as np
+
+from .timeout import timeout
 
 
 class Model:
 
     def __init__(self):
-
-        """
-        self.data = pd.DataFrame(params['data'])
-        self.raw_data = self.data
-        self.response = params['response']
-        if self.response == 'None':
-            self.supervised = False
-        else:
-            self.supervised = True
-        self.samples = len(self.data.index)
-        self.missing_values = params['missing_values']
-        self.scalar = params['scalar']
-        self.encoder = params['encoder']
-        self.clusters = params['clusters']
-        self.gridsearch = params['gridsearch']
-        self.encoder_history = None
-
-        if 'force_comp' in params:
-            self.force_comp = params['force_comp']
-        else:
-            self.force_comp = False
-
-        if 'classifier' in params:
-            self.classifier = params['classifier']
-        else:
-            self.classifier = 'auto'
-
-        if 'reduction' in params:
-            self.reduction = params['reduction']
-        else:
-            self.reduction = 'auto'
-
-        if 'imputer' in params:
-            self.imputer = params['imputer']
-        else:
-            self.imputer = 'mean'
-
-        if 'allow_fail' in params:
-            self.allow_fail = params['allow_fail']
-        else:
-            self.allow_fail = True
-
-        if 'continuous_threshold' in params:
-            self.continuous_threshold = params['continuous_threshold']
-        else:
-            self.continuous_threshold = 0.4
-
-        if 'testsplit' in params:
-            self.testsplit = params['testsplit']
-        else:
-            self.testsplit = 0.3
-
-        if 'discreatize' in params:
-            self.discreatize = params['discreatize']
-        else:
-            self.discreatize = False
-            """
-        pass
+        # set parameters
+        self.TIMEOUT = 5
+        self.TEST_SPLIT = 0.25
 
 
-    def data_transform(self,data):
+    def data_transform(self, data):
         # reset index to 0,1,2,3...
         data.index = range(0, len(data))
 
@@ -141,20 +82,35 @@ class Model:
                 feature_space[x] = (feature_space[x] - feature_space[x].mean()) / feature_space[x].std()
         return feature_space
 
-    def run_model(self,data, label):
+    # unsupervised learning
+    def run_model(self, data):
+        pass
+
+    # supervised learning
+    def run_model(self, data, label):
+
+        # organize data into separate label and data dataframes
         data = data
         labels = data[label]
         data = data.drop(label, axis=1)
+        # feature space is the form of data the algorithm will actually see
         feature_space = self.data_transform(data)
 
-        x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.25)
+        # split data and labels in sperate training and testing sets
+        x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=self.TEST_SPLIT)
 
+        # record results inside a list
         classifiers = []
-        # SGDClassifier
-        classifiers.append(self.run_sgd(x_train, y_train, x_test, y_test))
-        classifiers.append(self.run_svc(x_train, y_train, x_test, y_test))
-        classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
-        classifiers.append(self.run_gaussian(x_train, y_train, x_test, y_test))
+
+        # try each classifier and setting a time limit
+        with timeout(seconds=self.TIMEOUT):
+            classifiers.append(self.run_sgd(x_train, y_train, x_test, y_test))
+        with timeout(seconds=self.TIMEOUT):
+            classifiers.append(self.run_svc(x_train, y_train, x_test, y_test))
+        with timeout(seconds=self.TIMEOUT):
+            classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
+        with timeout(seconds=self.TIMEOUT):
+            classifiers.append(self.run_gaussian(x_train, y_train, x_test, y_test))
         return classifiers
 
     def run_sgd(self, x, y, X, Y):
@@ -194,7 +150,7 @@ class Model:
         p = mlp.predict(X)
         # generate and return results
         results = {'Classifier': 'MLP Neural Network'}
-        results['summary'] = pd.concat([pd.DataFrame(metrics.classification_report(Y, p, output_dict=True)),pd.DataFrame(mlp.coefs_)],axis=0,join='outer')
+        results['summary'] = metrics.classification_report(Y, p, output_dict=True)
         results['ConfusionMatrix'] = metrics.confusion_matrix(Y, p)
         print(f"MLP Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
         return results
@@ -218,13 +174,19 @@ class Model:
         print(f"Gaussian Complete: Accuracy:{metrics.accuracy_score(Y, p)}")
         return results
 
+    # function to convert high dimensional into 2 principle components for visualization
     def generateXY(self, data):
+        # set limit on the amount of data to process
         process_limit = 1000
+        # calculate the amount of values in the dataframe
         value_count = len(data) * len(data.columns)
+        # select either the first [process_limit] rows of data or if < process limit then select all rows
         if value_count > process_limit:
             nums = data.iloc[:process_limit, :].select_dtypes(include=['float64', 'int64'])
         else:
             nums = data.select_dtypes(include=['float64', 'int64'])
+        # create the T-SNE object and fit it to the numerical columns
         tsne = TSNE(n_components=2, learning_rate='auto', init='pca')
         tsne.fit(nums)
+        # return the nums dataframe which consists of 2 columns of principle components
         return tsne.fit_transform(nums)
