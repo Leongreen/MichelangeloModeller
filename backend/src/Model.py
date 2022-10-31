@@ -100,7 +100,7 @@ class Model:
         # record results inside a list
         classifiers = []
 
-        # try each classifier and setting a time limit
+        # try each classifier
         classifiers.append(self.run_sgd(x_train, y_train, x_test, y_test))
         classifiers.append(self.run_svc(x_train, y_train, x_test, y_test))
         classifiers.append(self.run_mlp(x_train, y_train, x_test, y_test))
@@ -118,7 +118,6 @@ class Model:
             c_report = []
             for i in x['summary'].keys():
                 if type(x['summary'][i]) != float:
-
                     n = x['summary'][i]
                     c_report.append(n)
 
