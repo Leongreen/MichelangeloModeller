@@ -8,7 +8,7 @@ import VariableSelector from "../components/VariableSelector";
 const Model = () => {
     const images = require.context("../../../backend", true);
 
-    const [loadedPage, setLoadedPage] = useState(false);
+    const [loadedPage, setLoadedPage] = useState(true);
 
     const [localImage1, setLocalImage1] = useState(null);
     const [localImage2, setLocalImage2] = useState(null);

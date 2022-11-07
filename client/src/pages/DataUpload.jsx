@@ -1,15 +1,16 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import generateATable from '../functions/TableCreator';
 import HorizontalTable from '../components/HorizontalTable';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { createElement } from 'react';
+import { UserContext } from '../App';
 
 
 const DataUpload = () => {
     const [dataLoaded, setDataLoaded] = useState(true);
     const [table, setTable] = useState('');
-
+    const [rawDataChanged, setRawDataChanged, resChanged, setResChanged ]= useContext(UserContext);
     
     const uploadDataset = () => {
         let input = document.getElementById("file");
@@ -78,6 +79,10 @@ const DataUpload = () => {
                                     data={d}
                                     description="The following table shows data preview which allows you to confirm that the loaded dataset is not corrupted and succesfully uploaded."></HorizontalTable>)
 
+                                setRawDataChanged(true);
+                                if (window.data === undefined){
+                                    window.data = "";
+                                }
                             }
                         ) // FirstEntries Fetch ends
                     }

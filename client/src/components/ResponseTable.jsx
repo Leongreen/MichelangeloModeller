@@ -1,11 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Toggle from '../components/Toggle';
+import { UserContext } from '../App';
 
 export default function ResponseTable(props) {
     const [labels, setLabels] = useState([]);
     const [prediction, setPrediction] = useState([]);
-    const [loaded, setLoaded] = useState();
-
+    const [loaded, setLoaded] = useState(false);
+    const [rawDataChanged, setRawDataChanged, resChanged, setResChanged]= useContext(UserContext);
     useEffect(() =>{
         let fd = new FormData()
         let file = new File(    [new Blob([window.data_raw])], 
@@ -27,15 +28,21 @@ export default function ResponseTable(props) {
     function changeResponse(res){
         window.responseVar = res;
         props.setParentState(res);
-
+        setResChanged(true);
     }
 
     function generateTR(i){
         let TD = [];
         
         TD.push(<td scope="col" className="border py-2 px-8 transition hover:bg-gray-200">{labels[i]}</td>);
-        TD.push(<td scope="col" className="border py-2 px-8 transition"><input className='mx-auto' type="radio" name="response" value={labels[i]} 
+        if (labels[i] == window.responseVar) {
+            TD.push(<td scope="col" className="border py-2 px-8 transition"><input className='mx-auto' type="radio" name="response" checked value={labels[i]} 
                                 onChange={() => changeResponse(labels[i])} /></td>)
+        } else {
+            TD.push(<td scope="col" className="border py-2 px-8 transition"><input className='mx-auto' type="radio" name="response" value={labels[i]} 
+            onChange={() => changeResponse(labels[i])} /></td>)
+        }
+
         return TD;
     }
     function generateTD() {

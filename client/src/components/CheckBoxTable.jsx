@@ -33,7 +33,7 @@ export default function CheckBoxTable(props) {
         ).then(
             data=> {
                 setLabels(data);
-                setTablesToUse(data);
+
             })
     }, [loaded, props.givenState])
 
@@ -69,13 +69,25 @@ export default function CheckBoxTable(props) {
 
     function generateTR(i){
         let TD = [];
+
         if (labels[i] !== window.responseVar) {
             let labelName = labels[i];
             TD.push(<td scope="col" className="border py-2 px-8 transition hover:bg-gray-200">{labels[i]}</td>);
-            TD.push(<td scope="col" className="border py-2 px-8 transition ">
+
+            if (window.data.includes(labelName)){
+                TD.push(<td scope="col" className="border py-2 px-8 transition ">
                 <Toggle onSwitch={() => turnColumn(labelName)} default={true}></Toggle>
-            </td>)
+                </td>)
+                tablesToUse.push(labelName)
+            } else {
+                TD.push(<td scope="col" className="border py-2 px-8 transition ">
+                <Toggle onSwitch={() => turnColumn(labelName)} default={false}></Toggle>
+                </td>)
+            }
+            
+                
             TD.push(<td scope="col" className="border py-2 px-8 transition ">{prediction[i]? prediction[i].toFixed(2) : 0}</td>)
+            
         }
         
         return TD;
@@ -86,12 +98,29 @@ export default function CheckBoxTable(props) {
             TR.push(<tr>
                 {generateTR(i)}
             </tr>)
+            
         }
+        let fd = new FormData()
+        let file = new File(    [new Blob([window.data_raw])], 
+                                sessionStorage.getItem('raw_file_fileName'))
+        
+        fd.append('file', file)
+        fd.append('columnList', JSON.stringify(tablesToUse))
+
+        fetch("/DropColumns",{
+            method: 'POST',
+            body: fd
+        }).then(
+            res=>res.json()
+        ).then(
+            data=> {
+                window.data = JSON.stringify(data)
+            })
         return TR;
     }
 
-
     return (
+        
         <div className="overflow-hidden  shadow-md sm:rounded-lg border border-gray-400">
             <table className="w-full text-sm text-left text-gray-700">
                 <caption className="p-5 text-lg font-semibold text-left text-gray-700 bg-white ">{props.title}
