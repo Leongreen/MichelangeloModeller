@@ -48,6 +48,10 @@ class DataManager:
         else:
             print("Unsupported filetype")
         #print("Data imported: "+ str(self.df))
+
+        if self.df.empty:
+            print("Data importing failed, unknown reason")
+
         return self.df
         # A gate similar to switch state in order to call correct function
         # Else statement if none of   the common functions appliable

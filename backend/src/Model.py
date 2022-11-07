@@ -88,7 +88,10 @@ class Model:
 
     # supervised learning
     def run_model(self, data, label):
+        print(f"model.py given data:{data}, label:{label}")
         result = {}
+        #data = data.dropna()
+        print(f"data contains nulls? {pd.DataFrame(data).isnull().values.any()}")
         result['filenames'] = self.generateGraph(data, label)
         # organize data into separate label and data dataframes
         data = data
@@ -198,21 +201,35 @@ class Model:
     # function to convert high dimensional into 2 principle components for visualization
     def generateGraph(self, data, label):
         print("Generating Graph")
+        print(data)
         # set limit on the amount of data to process
-        data = data.dropna()
-        labels = data[label]
-        data = data.drop(label, axis=1)
-        process_limit = 1000
+        data = pd.DataFrame(data).dropna(axis=1)
+        data = pd.DataFrame(data).dropna(axis=0)
+        process_limit = 1500
         # calculate the amount of values in the dataframe
         value_count = len(data) * len(data.columns)
-        # select either the first [process_limit] rows of data or if < process limit then select all rows
+        print(data.shape)
+        print(f"Total Values: {value_count}, Process limit: {process_limit}")
         if value_count > process_limit:
-            nums = data.iloc[:process_limit, :].select_dtypes(include=['float64', 'int64'])
-        else:
-            nums = data.select_dtypes(include=['float64', 'int64'])
+            data = data.sample(frac=1)
+            data = data.sample(round(process_limit/len(data.columns)))
+        print(data.shape)
+        labels = data[label]
+        data = data.drop(label, axis=1)
+        nums = data.select_dtypes(['int64','float64'])
+        if len(nums.columns) >= 2:
+            print(f"Enough numeric columns: {len(nums.columns)}")
+            print(nums)
+            data = nums
+        data = self.data_transform(data)
+        # select either the first [process_limit] rows of data or if < process limit then select all rows
+
+
         # create the T-SNE object and fit it to the numerical columns
         tsne = TSNE(n_components=2, learning_rate='auto', init='pca')
-        comps = tsne.fit_transform(nums)
+        print("TSNE object created")
+        comps = tsne.fit_transform(data)
+        print("TSNE transform complete")
 
         kernel = 1.0 * RBF(1.0)
         gpc = GaussianProcessClassifier(kernel=kernel)
@@ -222,19 +239,24 @@ class Model:
         le = LabelEncoder()
         labels = le.fit_transform(labels)
 
+        print("fitting gpc")
         gpc.fit(comps,labels)
+        print("fitting mlp")
         mlp.fit(comps,labels)
+        print("fitting svc")
         svc.fit(comps,labels)
+        print("fitting sgd")
         sgd.fit(comps,labels)
-
+        print("fitting complete")
+        print(f"data contains nulls? {pd.DataFrame(comps).isnull().values.any()}")
         names = []
+        print("creating boundries")
         names.append(self.createBoundry("gpc","Gaussian Process Classifier",gpc,comps,labels))
         names.append(self.createBoundry("mlp","Multi-Layer Perceptron",mlp,comps,labels))
         names.append(self.createBoundry("svc","Support Vector",svc,comps,labels))
         names.append(self.createBoundry("sgd","SGD Classifier",sgd,comps,labels))
         # return the nums dataframe which consists of 2 columns of principle components
-
-        print(names)
+        print(f"=============Graph generating complete: {names}===========")
         return names
 
     def createBoundry(self,classifier,name, clf, comps, labels, ax=None):
@@ -242,8 +264,8 @@ class Model:
         filename = str(classifier + ".png")
         title = str("Decision Boundary of "+name)
         d = DecisionBoundaryDisplay.from_estimator(clf,comps,xlabel="Compressed X",ylabel="Compressed Y")
-        d.ax_.scatter(comps[:,0],comps[:,1],c=labels,edgecolor='black',linewidth=1.25)
-        d.figure_.set_dpi(250)
+        d.ax_.scatter(comps[:,0],comps[:,1],c=labels,edgecolor='black',linewidth=1.5)
+        d.figure_.set_dpi(300)
         d.ax_.title.set_text(title)
         d.figure_.savefig(filename)
         return filename

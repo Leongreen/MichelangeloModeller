@@ -195,7 +195,7 @@ def applyModel():
         d.ReadFile(raw_file)
         model = Model()
         response = request.form['response']
-
+        print(f"Applying model on data: {d.df}, with response:{response}")
         output.add_content(d.df, 'Raw Data')
         output.add_content(model.data_transform(d.df), 'Feature Space')
         output.add_content(d.df.corr(), 'Correlation')
@@ -230,7 +230,6 @@ def downloadResults():
         d.ReadFile(raw_file)
         model = Model()
         response = request.form['response']
-
         output.add_content(d.df, 'Raw Data')
         output.add_content(model.data_transform(d.df), 'Feature Space')
         output.add_content(d.df.corr(), 'Correlation')
@@ -240,7 +239,6 @@ def downloadResults():
             model.run_model(d.df)
         else:
             results = model.run_model(d.df, response)
-            #filenames = model.generateGraph(d.df, response)
 
         for x in results['output']:
             output.add_content(pd.DataFrame(x['summary']),x['Classifier'])
