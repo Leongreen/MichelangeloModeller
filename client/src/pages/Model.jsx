@@ -6,19 +6,19 @@ import SelectionMenu from '../components/SelectionMenu';
 import VariableSelector from "../components/VariableSelector";
 
 const Model = () => {
-    const [setVar1, var1] = useState('defaultVariable');
+    const images = require.context("../../../backend", true);
+
+    const [loadedPage, setLoadedPage] = useState(false);
+
+    const [localImage1, setLocalImage1] = useState(null);
+    const [localImage2, setLocalImage2] = useState(null);
+    const [localImage3, setLocalImage3] = useState(null);
+    const [localImage4, setLocalImage4] = useState(null);
+
     const [tablesLoaded, setTablesLoaded] = useState(false);
     const [table1, setTable1] = useState(<HorizontalTable title="Classifiers" description="The following table will show basic Classification performance for the selected variable."
     labels={['Classifier', 'Accuracy']} data={[]} ></HorizontalTable>);
 
-    const [table2, setTable2] = useState(<HorizontalTable title="Gaussian Process" description=""
-    labels={['f1-score', 'precision','recall', 'support']} data={[]} ></HorizontalTable>);
-    const [table3, setTable3] = useState(<HorizontalTable title="LinearSVC" description=""
-    labels={['f1-score', 'precision','recall', 'support']} data={[]} ></HorizontalTable>);
-    const [table4, setTable4] = useState(<HorizontalTable title="MLP Neural Network" description=""
-    labels={['f1-score', 'precision','recall', 'support']} data={[]} ></HorizontalTable>);
-    const [table5, setTable5] = useState(<HorizontalTable title="SGD" description=""
-    labels={['f1-score', 'precision','recall', 'support']} data={[]} ></HorizontalTable>);
 
     useEffect(() => {
         setTablesLoaded(false);
@@ -49,36 +49,18 @@ const Model = () => {
                                             [data.summarytable[3][0], data.summarytable[3][1].toFixed(2)]]}></HorizontalTable>);
                 
                 
+                
+
+                setLocalImage1(images('./gpc.png'));
+                setLocalImage2(images('./mlp.png'));
+                setLocalImage3(images('./sgd.png'));
+                setLocalImage4(images('./svc.png'));
+
                 setTablesLoaded(true)
-            
-                let tableData1 = [];
-                let tableData2 = [];
-                let tableData3 = [];
-                let tableData4 = [];
-                console.log(data['Gaussian Process'][1])
-                // Parsing data
-                for (let i = 0; data['Gaussian Process'][i] !== undefined; i++){
-                    tableData1.push([data['Gaussian Process'][i]['f1-score'].toFixed(2), data['Gaussian Process'][i]['precision'].toFixed(2), data['Gaussian Process'][i]['recall'].toFixed(2), data['Gaussian Process'][i]['support'].toFixed(2)])
-                    tableData2.push([data['LinearSVC'][i]['f1-score'].toFixed(2), data['LinearSVC'][i]['precision'].toFixed(2), data['LinearSVC'][i]['recall'].toFixed(2), data['LinearSVC'][i]['support'].toFixed(2)])
-                    tableData3.push([data['MLP Neural Network'][i]['f1-score'].toFixed(2), data['MLP Neural Network'][i]['precision'].toFixed(2), data['MLP Neural Network'][i]['recall'].toFixed(2), data['MLP Neural Network'][i]['support'].toFixed(2)])
-                    tableData4.push([data['SGD'][i]['f1-score'].toFixed(2), data['SGD'][i]['precision'].toFixed(2), data['SGD'][i]['recall'].toFixed(2), data['SGD'][i]['support'].toFixed(2)])
-                }
-                setTable2(<HorizontalTable title="Gaussian Process"
-                                           description=""
-                                           labels={['f1-score', 'precision','recall', 'support']} data={tableData1}></HorizontalTable>);
-                setTable3(<HorizontalTable title="LinearSVC"
-                                           description=""
-                                           labels={['f1-score', 'precision','recall', 'support']} data={tableData2}></HorizontalTable>);
-                setTable4(<HorizontalTable title="MLP Neural Network"
-                                           description=""
-                                           labels={['f1-score', 'precision','recall', 'support']} data={tableData3}></HorizontalTable>);
-                setTable5(<HorizontalTable title="SGD"
-                                           description=""
-                                           labels={['f1-score', 'precision','recall', 'support']} data={tableData4}></HorizontalTable>);
             }
         );
         
-    }, []);
+    }, [loadedPage]);
 
     return (
         <div className='h-full'>
@@ -96,36 +78,24 @@ const Model = () => {
                     </div>
                 </div>
                 
-                {/* Classifiers Specified */}
-                <div className="grid grid-rows-2 grid-cols-2 gap-4">
-                    <div className="max-h-[600px]">
-                        <div className="w-full">
-                                {tablesLoaded? table2 : <HorizontalTable title="Gaussian Process" description=""
-                                                        labels={['f1-score', 'precision','recall', 'support']} data={[]} ></HorizontalTable>}
-                        </div>
-                    </div>
-                    <div className="max-h-[600px]">
-                        <div className="w-full">
-                                {tablesLoaded? table3 : <HorizontalTable title="LinearSVC" description=""
-                                                        labels={['f1-score', 'precision','recall', 'support']} data={[]} ></HorizontalTable>}
-                        </div>
-                    </div>
-                    <div className="max-h-[600px]">
-                        <div className="w-full">
-                                {tablesLoaded? table4 : <HorizontalTable title="MLP Neural Network" description=""
-                                                        labels={['f1-score', 'precision','recall', 'support']} data={[]} ></HorizontalTable>}
-                        </div>
-                    </div>
-                    <div className="max-h-[600px]">
-                        <div className="w-full">
-                                {tablesLoaded? table5 : <HorizontalTable title="SGD" description=""
-                                                        labels={['f1-score', 'precision','recall', 'support']} data={[]} ></HorizontalTable>}
-                        </div>
-                    </div>
-                </div>
+
 
                 
-
+                
+            </div>
+            <div className="max-w-[1000px] max-h-[1000px] grid grid-rows-2 grid-cols-2 gap-4 my-4 mx-4">
+             <div className="overflow-hidden rounded-lg shadow-lg max-w-[500px] max-h-[500px]">
+                <img className="max-w-[500px] max-h-[500px] mx-auto " src={localImage1}></img>
+             </div>
+             <div className="overflow-hidden rounded-lg shadow-lg max-w-[500px] max-h-[500px]">
+                <img className="max-w-[500px] max-h-[500px] mx-auto " src={localImage2}></img>
+            </div>
+             <div className="overflow-hidden rounded-lg shadow-lg max-w-[500px] max-h-[500px]">
+                <img className="max-w-[500px] max-h-[500px] mx-auto " src={localImage3}></img>
+             </div>
+             <div className="overflow-hidden rounded-lg shadow-lg max-w-[500px] max-h-[500px]">
+                <img className="max-w-[500px] max-h-[500px] mx-auto " src={localImage4}></img>
+             </div>
             </div>
         </div>
     )
