@@ -201,7 +201,6 @@ class Model:
     # function to convert high dimensional into 2 principle components for visualization
     def generateGraph(self, data, label):
         print("Generating Graph")
-        print(data)
         # set limit on the amount of data to process
         data = pd.DataFrame(data).dropna(axis=1)
         data = pd.DataFrame(data).dropna(axis=0)
@@ -210,35 +209,42 @@ class Model:
         value_count = len(data) * len(data.columns)
         print(data.shape)
         print(f"Total Values: {value_count}, Process limit: {process_limit}")
+        # shuffle and remove any extra rows
         if value_count > process_limit:
             data = data.sample(frac=1)
             data = data.sample(round(process_limit/len(data.columns)))
         print(data.shape)
+        # split labels from data
         labels = data[label]
         data = data.drop(label, axis=1)
+        # select the numeric columns, if there is enough just use numeric and avoid text vectorizing
         nums = data.select_dtypes(['int64','float64'])
         if len(nums.columns) >= 2:
             print(f"Enough numeric columns: {len(nums.columns)}")
             print(nums)
             data = nums
+        # transform data to feature space
         data = self.data_transform(data)
-        # select either the first [process_limit] rows of data or if < process limit then select all rows
-
 
         # create the T-SNE object and fit it to the numerical columns
         tsne = TSNE(n_components=2, learning_rate='auto', init='pca')
         print("TSNE object created")
+        # convert data to components, ie 2 columns
         comps = tsne.fit_transform(data)
         print("TSNE transform complete")
 
+        # create classifier objects
         kernel = 1.0 * RBF(1.0)
         gpc = GaussianProcessClassifier(kernel=kernel)
         mlp = MLPClassifier()
         svc = LinearSVC()
         sgd = SGDClassifier()
+
+        # transform labels to number labels
         le = LabelEncoder()
         labels = le.fit_transform(labels)
 
+        # fit the classifiers on the 2D data
         print("fitting gpc")
         gpc.fit(comps,labels)
         print("fitting mlp")
@@ -250,6 +256,7 @@ class Model:
         print("fitting complete")
         print(f"data contains nulls? {pd.DataFrame(comps).isnull().values.any()}")
         names = []
+        # create a png for each classifier showing the decision boundary
         print("creating boundries")
         names.append(self.createBoundry("gpc","Gaussian Process Classifier",gpc,comps,labels))
         names.append(self.createBoundry("mlp","Multi-Layer Perceptron",mlp,comps,labels))
