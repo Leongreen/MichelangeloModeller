@@ -29,7 +29,7 @@ export default function HorizontalTable(props) {
 
 
     return (
-        <div className="overflow-hidden hover:overflow-y-scroll shadow-md sm:rounded-lg border border-gray-400">
+        <div className="overflow-hidden hover:overflow-y-scroll overflow-x-auto shadow-md sm:rounded-lg border border-gray-400">
             <table className="w-full text-sm text-left text-gray-700">
                 <caption className="p-5 text-lg font-semibold text-left text-gray-700 bg-white ">{props.title}
                     <p className="mt-1 text-sm font-normal text-gray-500 ">{props.description}</p>
