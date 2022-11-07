@@ -101,7 +101,9 @@ class Model:
         feature_space = self.data_transform(data)
 
         # split data and labels in sperate training and testing sets
-        x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=self.TEST_SPLIT)
+        x_train, x_test, y_train, y_test = train_test_split(feature_space, labels, test_size=self.TEST_SPLIT)
+
+
 
         # record results inside a list
         classifiers = []
