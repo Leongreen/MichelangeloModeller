@@ -240,6 +240,7 @@ def downloadResults():
             model.run_model(d.df)
         else:
             results = model.run_model(d.df, response)
+            #filenames = model.generateGraph(d.df, response)
 
         for x in results['output']:
             output.add_content(pd.DataFrame(x['summary']),x['Classifier'])
@@ -250,7 +251,6 @@ def downloadResults():
         # results['classifiers'] : list of classifiers
         # results['graph'] : 2d array for graph
         # result['graphlabel'] : label/color for graph
-
         # result[classifier_name] : table showing stats about that classifier
 
         output.generate()

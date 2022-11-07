@@ -8,8 +8,10 @@ from sklearn.manifold import TSNE
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import LinearSVC
-
+import matplotlib as plt
+from sklearn.inspection import DecisionBoundaryDisplay
 
 class Model:
 
@@ -86,7 +88,8 @@ class Model:
 
     # supervised learning
     def run_model(self, data, label):
-
+        result = {}
+        result['filenames'] = self.generateGraph(data, label)
         # organize data into separate label and data dataframes
         data = data
         labels = data[label]
@@ -108,7 +111,6 @@ class Model:
         # dict['Classifier'] : name of classifier. The user should see this
         # dict['ConfusionMatrix'] : ndarray showing TP, TN, FN, FP. Useful for user but not necessary
         # dict['summary'] : dict containing acc, pre, recall, f1 ect. The user should see this
-        result = {}
         summaryTable = []
         models = []
 
@@ -126,7 +128,6 @@ class Model:
             result[x['Classifier']] = list(c_report)
 
         result['classifiers'] = list(models)
-        result['graph'] = self.generateXY(data)
         result['graphlabel'] = list(labels)
         result['summarytable'] = list(summaryTable)
         result['output'] = classifiers
@@ -182,11 +183,11 @@ class Model:
             return results
         # create the classifier object and kernel
         kernel = 1.0 * RBF(1.0)
-        mlp = GaussianProcessClassifier(kernel=kernel)
+        gpc = GaussianProcessClassifier(kernel=kernel)
         # fit classifier to training data (x,y)
-        mlp.fit(x, y)
+        gpc.fit(x, y)
         # make a prediction on the test data
-        p = mlp.predict(X)
+        p = gpc.predict(X)
         # generate and return results
 
         results['summary'] = metrics.classification_report(Y, p, output_dict=True)
@@ -195,9 +196,12 @@ class Model:
         return results
 
     # function to convert high dimensional into 2 principle components for visualization
-    def generateXY(self, data):
+    def generateGraph(self, data, label):
+        print("Generating Graph")
         # set limit on the amount of data to process
         data = data.dropna()
+        labels = data[label]
+        data = data.drop(label, axis=1)
         process_limit = 1000
         # calculate the amount of values in the dataframe
         value_count = len(data) * len(data.columns)
@@ -208,6 +212,38 @@ class Model:
             nums = data.select_dtypes(include=['float64', 'int64'])
         # create the T-SNE object and fit it to the numerical columns
         tsne = TSNE(n_components=2, learning_rate='auto', init='pca')
-        comps = pd.DataFrame(tsne.fit_transform(nums))
+        comps = tsne.fit_transform(nums)
+
+        kernel = 1.0 * RBF(1.0)
+        gpc = GaussianProcessClassifier(kernel=kernel)
+        mlp = MLPClassifier()
+        svc = LinearSVC()
+        sgd = SGDClassifier()
+        le = LabelEncoder()
+        labels = le.fit_transform(labels)
+
+        gpc.fit(comps,labels)
+        mlp.fit(comps,labels)
+        svc.fit(comps,labels)
+        sgd.fit(comps,labels)
+
+        names = []
+        names.append(self.createBoundry("gpc","Gaussian Process Classifier",gpc,comps,labels))
+        names.append(self.createBoundry("mlp","Multi-Layer Perceptron",mlp,comps,labels))
+        names.append(self.createBoundry("svc","Support Vector",svc,comps,labels))
+        names.append(self.createBoundry("sgd","SGD Classifier",sgd,comps,labels))
         # return the nums dataframe which consists of 2 columns of principle components
-        return list([list(comps.iloc[:,0]),list(comps.iloc[:,1])])
+
+        print(names)
+        return names
+
+    def createBoundry(self,classifier,name, clf, comps, labels, ax=None):
+        plt.rcParams['figure.figsize'] = [20, 10]
+        filename = str(classifier + ".png")
+        title = str("Decision Boundary of "+name)
+        d = DecisionBoundaryDisplay.from_estimator(clf,comps,xlabel="Compressed X",ylabel="Compressed Y")
+        d.ax_.scatter(comps[:,0],comps[:,1],c=labels,edgecolor='black',linewidth=1.25)
+        d.figure_.set_dpi(250)
+        d.ax_.title.set_text(title)
+        d.figure_.savefig(filename)
+        return filename
