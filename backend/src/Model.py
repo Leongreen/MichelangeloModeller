@@ -273,7 +273,7 @@ class Model:
         plt.rcParams.update({'font.size': 20})
         filename = str(classifier + ".png")
         title = str("Decision Boundary of "+name)
-        d = DecisionBoundaryDisplay.from_estimator(clf,comps,xlabel="Compressed X",ylabel="Compressed Y")
+        d = DecisionBoundaryDisplay.from_estimator(clf,comps)
         d.ax_.scatter(comps[:,0],comps[:,1],c=labels,edgecolor='black',linewidth=1.5)
         d.figure_.set_dpi(300)
         d.ax_.title.set_text(title)
