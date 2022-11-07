@@ -269,7 +269,8 @@ class Model:
         return names
 
     def createBoundry(self,classifier,name, clf, comps, labels, ax=None):
-        plt.rcParams['figure.figsize'] = [20, 10]
+        plt.rcParams['figure.figsize'] = [10, 5]
+        plt.rcParams.update({'font.size': 20})
         filename = str(classifier + ".png")
         title = str("Decision Boundary of "+name)
         d = DecisionBoundaryDisplay.from_estimator(clf,comps,xlabel="Compressed X",ylabel="Compressed Y")
